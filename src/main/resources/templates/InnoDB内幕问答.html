@@ -1,0 +1,135 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>InnoDB内幕问答</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="innodb-">InnoDB内幕问答</h1>
+<h2 id="1-">1.索引和算法</h2>
+<h2 id="b-">B+树索引</h2>
+<ol>
+<li>InnoDB支持哪些索引？</li>
+<li>B+树是什么</li>
+<li>B+树的B代表什么</li>
+<li>B+树能精确到行吗？</li>
+<li>B+树索引分几种，各自特点</li>
+<li>什么是Cardinality</li>
+<li>Cardinality怎么统计的</li>
+<li>在OLTP中B+树最好怎么使用</li>
+<li>在OLAP中B+树最好怎么使用</li>
+<li>联合索引的两个好处</li>
+<li>覆盖索引是什么</li>
+<li>对于（a，b）索引，什么时候可以选择b作为条件</li>
+<li>需要索引提示的情况？</li>
+<li>索引提示有什么语句和区别</li>
+</ol>
+<h2 id="-">哈希索引</h2>
+<ol>
+<li>哈希算法 用什么解决冲突 哈希函数是什么</li>
+<li>哈希索引和B+树索引的区别</li>
+</ol>
+<h2 id="-">全文索引</h2>
+<ol>
+<li>全文索引有什么用</li>
+<li>全文索引实现原理</li>
+<li>全文检索索引缓存是什么</li>
+<li>stopword列表是什么</li>
+<li>什么时候不会对单词查询</li>
+<li>全文索引的语法</li>
+<li>全文索引有什么方法，说说每个方法的特点</li>
+</ol>
+<h2 id="2-">2. 锁</h2>
+<ol>
+<li>latch和lock的区别</li>
+<li>InnoDB有那些锁</li>
+<li>行级锁的类型有什么，特点是是什么，兼容情况</li>
+<li>说说意向锁</li>
+<li>一致性非锁定读是什么，在不同隔离情况下有什么区别</li>
+<li>MVCC实现原理</li>
+<li>select锁定读的两个语句和区别</li>
+<li>行锁的三种算法</li>
+<li>幻读是什么，怎么解决</li>
+<li>超时异常事务会回滚吗，死锁呢？</li>
+</ol>
+<h2 id="3-">3. 事务</h2>
+<ol>
+<li>解释一下ACID</li>
+<li>事务的分类和特点</li>
+<li>Mysql支持什么事务</li>
+<li>事务怎么实现的</li>
+<li>redo和undo的区别</li>
+<li>什么是purge</li>
+<li>事务控制语句有哪些</li>
+<li>什么是隐式提交的SQL,都有哪些</li>
+<li>隐式提交有啥问题</li>
+<li>事务循环提交的缺点</li>
+<li>怎么优化长事务</li>
+</ol>
+<h2 id="4-">4. 日志</h2>
+<ol>
+<li>Mysql有哪些文件</li>
+<li>日志有哪些文件，分别是干什么的，他们有哪些特点</li>
+<li>InnoDB文件有哪些</li>
+<li>redo log 和二进制文件的区别</li>
+</ol>
+<h2 id="5-innodb-">5.InnoDB存储结构</h2>
+<ol>
+<li>InnoDB的存储结构有哪些</li>
+<li>什么是行溢出数据</li>
+<li>varchar的行溢出是怎么样的</li>
+<li>行溢出数据保存在哪</li>
+<li>发生行溢出后，原来的行保存着什么？</li>
+<li>什么时候不会行溢出</li>
+<li>视图是什么</li>
+<li>视图的作用</li>
+<li>分区有那两种，Mysql支持什么分区</li>
+<li>什么是局部分区索引，什么是全局分区索引，Mysql是哪一种</li>
+<li>分区是干什么的</li>
+<li>分区对于分区列有什么要求</li>
+<li>Mysql支持什么分区，各自特点是什么</li>
+<li>自增长能保证分区的均匀吗</li>
+<li>COLUMNS分区和其他分区的区别</li>
+<li>RANGE,List,Hash,KEY分区如何处理NULL</li>
+<li>分区和性能</li>
+</ol>
+<h2 id="6-innodb-">6.InnoDB引擎</h2>
+<ol>
+<li>InnoDB关键特性（5种）</li>
+<li>什么是Insert Buffer</li>
+<li>Insert Buffer的条件</li>
+<li>Insert Buffer内部怎么实现的</li>
+<li></li>
+</ol>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

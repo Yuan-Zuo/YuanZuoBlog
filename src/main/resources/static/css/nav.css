@@ -1,0 +1,125 @@
+
+.nav-screen-links .nav-link:hover {
+    color: var(--text-color)
+}
+
+.nav-screen-links .nav-link.active {
+    color: var(--theme-color)
+}
+
+#nav-screen {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 200;
+    overflow-y: auto;
+    padding: 0 2rem;
+    background-color: var(--bg-color);
+    transition: background-color .5s
+}
+
+@media (min-width: 719px) {
+    #nav-screen {
+        display: none
+    }
+}
+
+#nav-screen.fade-enter-active, #nav-screen.fade-leave-active {
+    transition: opacity .25s
+}
+
+#nav-screen.fade-enter-active .container, #nav-screen.fade-leave-active .container {
+    transition: transform .25s ease
+}
+
+#nav-screen.fade-enter-from, #nav-screen.fade-leave-to {
+    opacity: 0
+}
+
+#nav-screen.fade-enter-from .container, #nav-screen.fade-leave-to .container {
+    transform: translateY(-8px)
+}
+
+#nav-screen .container {
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 2rem 0 4rem
+}
+
+#nav-screen .outlook-wrapper {
+    display: flex;
+    justify-content: space-around
+}
+
+#nav-screen .icon {
+    margin-right: .25em
+}
+
+.navbar {
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    height: var(--navbar-height);
+    white-space: nowrap;
+    backdrop-filter: saturate(150%) blur(2px)
+}
+
+
+
+.hide-navbar .navbar.auto-hide {
+    transform: translateY(-100%)
+}
+
+
+.navbar .nav-links {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    font-size: .875rem
+}
+
+.navbar .nav-item {
+    position: relative;
+    margin: 0 .25rem;
+    line-height: 2rem
+}
+
+.navbar .nav-item:first-child {
+    margin-left: 0
+}
+
+.navbar .nav-item:last-child {
+    margin-right: 0
+}
+
+.navbar .nav-item > .nav-link {
+    color: var(--dark-grey)
+}
+
+.navbar .nav-item > .nav-link:after {
+    content: " ";
+    position: absolute;
+    right: 50%;
+    bottom: 0;
+    left: 50%;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--theme-color-light);
+    visibility: hidden;
+    transition: left .2s ease-in-out, right .2s ease-in-out
+}
+
+.navbar .nav-item > .nav-link.active {
+    color: var(--theme-color)
+}
+
+

@@ -1,0 +1,315 @@
+
+.sidebar {
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 150;
+    overflow-y: auto;
+    box-sizing: border-box;
+    width: 16rem;
+    margin: 0;
+    font-size: 16px;
+    transform: translate(-100%);
+    -webkit-backdrop-filter: saturate(150%) blur(12px);
+    backdrop-filter: saturate(150%) blur(2px);
+}
+
+.sidebar-heading-next {
+    display: none;
+    font-size: 14px;
+}
+
+.sidebar-heading-next li{
+    padding-top: 10px;
+    padding-bottom: 0;
+    margin-left: 30px;
+}
+
+ ul :hover{
+    cursor: pointer;
+}
+
+
+.sidebar-heading, .sidebar-link {
+    box-sizing: border-box;
+    width: 100%;
+    padding: .35rem 1rem .35rem 1.25rem;
+    color: var(--text-color)
+}
+
+.sidebar-heading {
+    align-items: center;
+    overflow: hidden;
+    margin: 0;
+    border-width: 0;
+    border-left: .25rem solid transparent;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+    background-color: transparent;
+    font-size: 1.1em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: color .15s ease;
+    transform: rotate(0)
+}
+
+
+
+.sidebar-heading .arrow {
+    position: absolute;
+    right: 0;
+    vertical-align: middle;
+    width: 1em;
+    height: 1em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(0,0,0,0.5)' d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
+    line-height: normal;
+    transition: all .3s;
+    font-size: 1.5em
+}
+
+
+.sidebar-heading .arrow.down {
+    transform: rotate(180deg)
+}
+
+.sidebar-heading .arrow.right {
+    transform: rotate(90deg)
+}
+
+.sidebar-heading .arrow.left {
+    transform: rotate(-90deg)
+}
+
+button.sidebar-heading {
+    outline: 0;
+    font-weight: inherit;
+    line-height: inherit;
+    text-align: left;
+    cursor: pointer
+}
+
+.sidebar-links, .sidebar-links ul {
+    margin: 0;
+    padding: 0
+
+}
+
+.sidebar-links ul {
+    list-style-type: none
+}
+
+.sidebar-links ul.sidebar-sub-headers {
+    padding-left: .75rem;
+    font-size: .95em
+}
+
+@media (min-width: 1440px) {
+    .has-toc .sidebar-links ul.sidebar-sub-headers {
+        display: none
+    }
+}
+
+.sidebar > .sidebar-links {
+    padding: 1.5rem 0
+}
+
+@media (max-width: 719px) {
+    .sidebar > .sidebar-links {
+        padding: 1rem 0
+    }
+}
+
+.sidebar > .sidebar-links > li > .sidebar-link {
+    font-size: 1.1em;
+    line-height: 1.7
+}
+
+.sidebar > .sidebar-links > li:not(:first-child) {
+    margin-top: .5rem
+}
+
+
+.sidebar a {
+    display: inline-block;
+    color: var(--text-color);
+    font-weight: 400
+}
+
+.sidebar .icon {
+    margin-right: .25em
+}
+
+.sidebar .blogger-info.mobile, .sidebar .blogger-info.mobile + hr {
+    display: none
+}
+
+@media (max-width: 719px) {
+    .sidebar .blogger-info.mobile {
+        display: block
+    }
+}
+
+@media (max-width: 719px) {
+    .sidebar .blogger-info.mobile + hr {
+        display: block;
+        margin-top: 16px
+    }
+}
+
+
+@media (max-width: 959px) {
+    .theme-container .page {
+        padding-top: var(--navbar-mobile-height);
+        padding-left: calc(var(--sidebar-mobile-width) + 2rem)
+    }
+}
+
+@media (max-width: 719px) {
+    .theme-container .page {
+        padding-left: 0
+    }
+}
+
+.theme-container .sidebar {
+    top: var(--navbar-height)
+}
+
+@media (max-width: 959px) {
+    .theme-container .sidebar {
+        top: var(--navbar-mobile-height)
+    }
+}
+
+.theme-container.no-navbar .page {
+    padding-top: 0
+}
+
+.theme-container.no-navbar .sidebar {
+    top: 0
+}
+
+@media (max-width: 719px) {
+    .theme-container.hide-navbar .sidebar, .theme-container.no-navbar .sidebar {
+        top: 0
+    }
+}
+
+.theme-container.no-sidebar .page {
+    padding-left: 0
+}
+
+.theme-container.no-sidebar .sidebar, .theme-container.no-sidebar .toggle-sidebar-button, .theme-container.no-sidebar .toggle-sidebar-wrapper {
+    display: none
+}
+
+.theme-container.sidebar-open .sidebar {
+    box-shadow: 2px 0 8px var(--card-shadow);
+    transform: translate(0)
+}
+
+@media (min-width: 720px) {
+    .theme-container:not(.sidebar-open) .page {
+        padding-left: 2rem
+    }
+
+    .theme-container:not(.sidebar-open) .sidebar {
+        transform: translate(-100%)
+    }
+}
+
+.theme-container:not(.sidebar-open) .sidebar {
+    box-shadow: none
+}
+
+.theme-container:not(.sidebar-open) .toggle-sidebar-wrapper {
+    left: 0
+}
+
+@media (min-width: 1440px) {
+    .theme-container.has-toc .page {
+        padding-right: 16rem
+    }
+}
+
+.toggle-sidebar-wrapper {
+    position: fixed;
+    top: calc(var(--navbar-height));
+    bottom: 0;
+    left: calc(16rem);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: left var(--transform-transition);
+    background-color: transparent;
+    backdrop-filter: saturate(150%) blur(2px);
+}
+
+
+
+.toggle-sidebar-wrapper:hover {
+    background-color: #7f7f7f0d;
+    cursor: pointer
+}
+
+.toggle-sidebar-wrapper .arrow {
+    display: inline-block;
+    vertical-align: middle;
+    width: 1em;
+    height: 1em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(0,0,0,0.5)' d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
+    line-height: normal;
+    transition: all .3s
+}
+
+.toggle-sidebar-wrapper .arrow.down {
+    transform: rotate(180deg)
+}
+
+.toggle-sidebar-wrapper .arrow.right {
+    transform: rotate(90deg)
+}
+
+.toggle-sidebar-wrapper .arrow.left {
+    transform: rotate(-90deg)
+}
+
+
+.page1{
+    overflow: auto;
+    position: absolute;
+    top: 3.75rem;
+    bottom: 0;
+    right: 0;
+    left: calc(18rem);
+    margin: 0;
+    backdrop-filter: saturate(100%) blur(0px);
+}
+
+::-webkit-scrollbar {/*滚动条整体样式*/
+
+    width: 5px;     /*高宽分别对应横竖滚动条的尺寸*/
+    height: 5px;
+
+}
+
+::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+
+    border-radius: 2px;
+
+    background: #75a0ec;
+
+}
+
+::-webkit-scrollbar-track {/*滚动条里面轨道*/
+
+    border-radius: 10px;
+
+    background: #EDEDED;
+
+}

@@ -1,0 +1,111 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>java数据结构</title>
+      <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+      <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h2 id="1-hashmap">1. HashMap</h2>
+<ul>
+<li>DEFAULT_INITIAL_CAPACITY Table数组的初始化长度： 1 &lt;&lt; 42^4=16（为什么要是 2的n次方？）</li>
+<li>MAXIMUM_CAPACITY Table数组的最大长度： 1&lt;&lt;302^30=1073741824</li>
+<li>DEFAULT_LOAD_FACTOR 负载因子：默认值为0.75。 当元素的总个数&gt;当前数组的长度 * 负载因子。数组会扩容为原来的两倍</li>
+<li>TREEIFY_THRESHOLD 链表树化阙值： 默认值为 8 。表示在一个node（Table）节点下的值的个数大于8时候，会将链表转换成为红黑树。</li>
+<li>UNTREEIFY_THRESHOLD 红黑树链化阙值： 默认值为 6 。 表示在进行扩容期间，单个Node节点下的红黑树节点的个数小于6时候，会将红黑树转化成为链表。</li>
+<li>MIN_TREEIFY_CAPACITY = 64 最小树化阈值，当Table所有元素超过改值，才会进行树化（为了防止前期阶段频繁扩容和树化过程冲突）。</li>
+</ul>
+<p>为了减少哈希碰撞，让hashCode的高16位和低16位进行或与运算</p>
+<pre><code>static final int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);
+    }
+</code></pre><p>HashMap采⽤Entry数组来存储key-value对，每⼀个键值对组成了⼀个Entry实体，Entry类实际上是⼀个单向的链表结构，它具有Next指针，可以连接下⼀个Entry实体。 只是在JDK1.8中，链表⻓度⼤于8的时候，链表会转成红⿊树！</p>
+<h3 id="1-linkedlist-">1.⽤LinkedList代替数组结构可以吗？</h3>
+<p>答案当然是肯定的。</p>
+<p>那既然可以使用进行替换处理，为什么有偏偏使用到数组呢？</p>
+<p>因为⽤数组效率最⾼！ 在HashMap中，定位节点的位置是利⽤元素的key的哈希值对数组⻓度取模得到。此时，我们已得到节点的位置。显然数组的查找效率⽐LinkedList⼤（底层是链表结构）。</p>
+<p>那ArrayList，底层也是数组，查找也快啊，为啥不⽤ArrayList? </p>
+<p>因为采⽤基本数组结构，扩容机制可以⾃⼰定义，HashMap中数组扩容刚好是2的次幂，在做取模运算的效率⾼。 ⽽ArrayList的扩容机制是1.5倍扩容。</p>
+<h3 id="2-hash-">2.Hash冲突：得到下标值：</h3>
+<p>我们的hashMap对存放进来的key值进行了hashcode()，生成了一个值，用取余的方法计算放入下标。</p>
+<p>HashMap对其进行了与操作，<strong>对Table的表长度减一再与生产的hash值进行相与</strong>：</p>
+<pre><code>if ((p = tab[i = (n - 1) &amp; hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+</code></pre><p>这里我们也就得知为什么Table数组的长度要一直都为2的n次方，只有这样，减一进行相与时候，才能够达到最大的n-1值。</p>
+<h3 id="3-hashmap-put-">3.HashMap的put元素的过程是什么样？</h3>
+<ol>
+<li>对key的hashCode()做hash运算，计算index;</li>
+<li>如果没碰撞直接放到bucket⾥；</li>
+<li>如果碰撞了，以链表的形式存在buckets后；</li>
+<li>如果碰撞导致链表过⻓(⼤于等于TREEIFY_THRESHOLD)，就把链表转换成红⿊树(JDK1.8中的改动)；</li>
+<li>如果节点已经存在就替换old value(保证key的唯⼀性)</li>
+<li>如果bucket满了(超过load factor*current capacity)，就要resize</li>
+</ol>
+<h3 id="get-">get方法</h3>
+<ol>
+<li>对key的hashCode()做hash运算，计算index;</li>
+<li>如果在bucket⾥的第⼀个节点⾥直接命中，则直接返回；</li>
+<li>如果有冲突，则通过key.equals(k)去查找对应的Entry;</li>
+<li>若为树，则在树中通过key.equals(k)查找，O(logn)；</li>
+<li>若为链表，则在链表中通过key.equals(k)查找，O(n)。</li>
+</ol>
+<h3 id="4-hashmap1-key-">4.用可变类当Hashmap1的Key会有什么问题</h3>
+<p>hashcode可能会发生变化，导致put进行的值，无法get出来</p>
+<h2 id="2-arraylist">2.ArrayList</h2>
+<p>底层结构</p>
+<p>Object数组</p>
+<p>初始容量： 10</p>
+<pre><code>private static final int DEFAULT_CAPACITY = 10;
+</code></pre><p>扩容时机：
+加入到ArrayList后判断是否有空间</p>
+<p>扩容机制</p>
+<ol>
+<li>先扩容1.5倍</li>
+<li>扩容后还不够就扩容到所需容量</li>
+<li>判断容量超过（MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8）</li>
+<li>是则判断容量是否溢出（cap&lt;0）报OutOfMemoryError（），不是容量变为Integer.MAX_VALUE</li>
+<li>否进行Arrays.copyOf(elementData, newCapacity);<pre><code>private void grow(int minCapacity) {
+     // overflow-conscious code
+     int oldCapacity = elementData.length;
+     int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+     if (newCapacity - minCapacity &lt; 0)
+         newCapacity = minCapacity;
+     if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+         newCapacity = hugeCapacity(minCapacity);
+     // minCapacity is usually close to size, so this is a win:
+     elementData = Arrays.copyOf(elementData, newCapacity);
+ }
+</code></pre></li>
+</ol>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
