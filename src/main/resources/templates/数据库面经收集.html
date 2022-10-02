@@ -1,0 +1,214 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>数据库面经收集</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h2 id="1-b-tree-b-tree-">1.为什么不用B Tree,而选择B+ tree呢？</h2>
+<p>注意一下B tree的两个明显特点</p>
+<ul>
+<li>树内存储数据</li>
+<li>叶子节点上无链表</li>
+</ul>
+<p>注意一下B+ tree的两个明显特点</p>
+<ul>
+<li>数据只出现在叶子节点</li>
+<li>所有叶子节点增加了一个链指针</li>
+</ul>
+<p>数据库索引采用B+ tree的主要原因是B Tree在提高了磁盘IO性能的同时并没有解决元素遍历的效率低下的问题。</p>
+<p>为了解决这个问题，B+ tree应运而生。B+ tree只要遍历叶子节点就可以实现整棵树的遍历。而且在数据库中基于范围的查询是非常频繁的，如果使用B Tree，则需要做局部的中序遍历，可能要跨层访问，效率太慢</p>
+<h2 id="2-">2.有一个列，里头的数据都是唯一的，需要建一个索引，选唯一索引还是普通索引</h2>
+<p>答:唯一索引！</p>
+<p>首先，在《阿里巴巴JAVA开发规范》中有这么一段话</p>
+<pre><code>业务上具有唯一特性的字段，即使是多个字段的组合，也必须建成唯一索引说明：不要以为唯一索引影响了 insert 速度，这个速度损耗可以忽略，但提高查找速度是明显的；另外，即使在应用层做了非常完善的校验控制，只要没有唯一索引，根据墨菲定律，必然有脏数据产生。
+</code></pre><p>总结：</p>
+<ul>
+<li>唯一索引影响了 insert 速度，这个速度损耗可以忽略</li>
+<li>提高查找速度</li>
+<li>即使在应用层做了非常完善的校验控制，只要没有唯一索引，根据墨菲定律，必然有脏数据产生。</li>
+</ul>
+<h2 id="3-">3.为什么唯一索引的插入速度比不上普通索引？</h2>
+<p>这个问题就要从Insert Buffer开始讲起了，在进行非聚簇索引的插入时，先判断插入的索引页是否在内存中。如果在，则直接插入；如果不在，则先放入Insert Buffer 中，然后再以一定频率和情况进行Insert Buffer和原数据页合并(merge)操作。这么做的优点:能将多个插入合并到一个操作中，就大大提高了非聚簇索引的插入性能。</p>
+<p>InnoDB 从 1.0.x 版本开始引入了 Change Buffer，可以算是对 Insert Buffer 的升级。从这个版本开始，InnoDB 存储引擎可以对 insert、delete、update 都进行缓存。</p>
+<p>唯一速度的插入比普通索引慢的原因就是:唯一索引无法利用Change Buffer
+普通索引可以利用Change Buffer</p>
+<p>于是乎下一问又来了！</p>
+<h2 id="4-change-buffer-">4.为什么唯一索引的更新不使用 Change Buffer？</h2>
+<p>因为唯一索引为了保证唯一性，需要将数据页加载进内存才能判断是否违反唯一性约束。但是，既然数据页都加载到内存了，还不如直接更新内存中的数据页，没有必要再使用Change Buffer。</p>
+<h2 id="5-">5. 为什么唯一索引的查找速度比普通索引快？</h2>
+<p>唯一索引的搜索速度比普通索引快的原因就是:普通索引在找到满足条件的第一条记录后，还需要判断下一条记录，直到第一个不满足条件的记录出现。唯一索引在找到满足条件的第一条记录后，直接返回，不用判断下一条记录了。</p>
+<h2 id="6-mybatis-">6. mybatis #{}和 ${}区别</h2>
+<p>#{} 是预编译处理，像传进来的数据会加个&quot; &quot;（#将传入的数据都当成一个字符串，会对自动传入的数据加一个双引号）</p>
+<p>\${} 就是字符串替换。直接替换掉占位符。$方式一般用于传入数据库对象，例如传入表名.</p>
+<p>使用\${} 的话会导致 sql 注入。什么是 SQL 注入呢？比如 select * from user where id = ${value}</p>
+<p>value 应该是一个数值吧。然后如果对方传过来的是 001  and name = tom。这样不就相当于多加了一个条件嘛？把SQL语句直接写进来了。如果是攻击性的语句呢？001；drop table user，直接把表给删了</p>
+<h2 id="7-">7.秒杀项目防止超卖：</h2>
+<p>数据库减库存先判断stock&gt;0</p>
+<p>使用唯一索引防止重复插入相同数据和事务一起使用 </p>
+<p>行级锁都是基于索引的，如果一条SQL语句用不到索引是不会使用行级锁的，会使用表级锁。</p>
+<h2 id="8-">8.什么是索引下推</h2>
+<p>ICP（Index Condition Pushdown）是在MySQL 5.6版本上推出的查询优化策略，把本来由Server层做的索引条件检查下推给存储引擎层来做，以降低回表和访问存储引擎的次数，提高查询效率。</p>
+<p>为了理解ICP是如何工作的，我们先了解下没有使用ICP的情况下，MySQL是如何查询的：</p>
+<ul>
+<li>存储引擎读取索引记录；</li>
+<li>根据索引中的主键值，定位并读取完整的行记录；</li>
+<li>存储引擎把记录交给Server层去检测该记录是否满足WHERE条件。</li>
+</ul>
+<p>使用ICP的情况下，查询过程如下：</p>
+<ul>
+<li>读取索引记录（不是完整的行记录）；</li>
+<li>判断WHERE条件部分能否用索引中的列来做检查，条件不满足，则处理下一行索引记录；</li>
+<li>条件满足，使用索引中的主键去定位并读取完整的行记录（就是所谓的回表）；</li>
+<li>存储引擎把记录交给Server层，Server层检测该记录是否满足WHERE条件的其余部分。</li>
+</ul>
+<p>举例：</p>
+<pre><code>select * from user where name=&quot;LiSi&quot; and city like &quot;%Z%&quot; and age &gt; 25;
+</code></pre><p>user表里创建了联合索引(name, city)</p>
+<h3 id="-">不使用索引下推</h3>
+<p>在不使用索引下推的情况下，根据联合索引“最左匹配”原则，只有name列能用到索引，city列由于是模糊匹配，是不能用到索引的，此时的执行过程是这样的：</p>
+<p>存储引擎根据(name, city)联合索引，找到name值为LiSi的记录，共4条记录；
+然后根据这4条记录中的id值，逐一进行回表扫描，去聚簇索引中取出完整的行记录，并把这些记录返回给Server层；</p>
+<p>Server层接收到这些记录，并按条件name=&quot;LiSi&quot; and city like &quot;%Z%&quot; and age &gt; 25进行过滤，最终留下(&quot;LiSi&quot;, &quot;ZhengZhou&quot;, 30)这条记录。</p>
+<h3 id="-">使用索引下推</h3>
+<p>使用索引下推的情况下，执行过程是这样的：</p>
+<p>存储引擎根据(name, city)联合索引，找到name=&#39;LiSi&#39;的记录，共4条；</p>
+<p>由于联合索引中包含city列，存储引擎直接在联合索引中按city like &quot;%Z%&quot;进行过滤，过滤后剩下2条记录；</p>
+<p>根据过滤后的记录的id值，逐一进行回表扫描，去聚簇索引中取出完整的行记录，并把这些记录返回给Server层；</p>
+<p>Server层根据WHERE语句的其它条件age &gt; 25，再次对行记录进行筛选，最终只留下(&quot;LiSi&quot;, &quot;ZhengZhou&quot;, 30)这条记录。</p>
+<h3 id="-">使用条件</h3>
+<ul>
+<li>只能用于range、 ref、 eq_ref、ref_or_null访问方法；</li>
+<li>只能用于InnoDB和 MyISAM存储引擎及其分区表；</li>
+<li><p>对InnoDB存储引擎来说，索引下推只适用于二级索引（也叫辅助索引）;
+索引下推的目的是为了减少回表次数，也就是要减少IO操作。对于InnoDB的聚簇索引来说，完整的行记录已经加载到缓存区了，索引下推也就没什么意义了。</p>
+</li>
+<li><p>引用了子查询的条件不能下推；</p>
+</li>
+<li>引用了存储函数的条件不能下推，因为存储引擎无法调用存储函数。</li>
+</ul>
+<h3 id="-">最左前缀原则了解过吗？</h3>
+<p>如果where条件是 where b=? and a=? 会走索引吗（mysql会自动优化，会使用索引）</p>
+<h2 id="9-sql-">9.一条 SQL 的执行过程详解</h2>
+<ol>
+<li>数据库连接池：维护一定的TCP连接数，方便系统获取连接，使用就去池子中获取，用完放回去就可以了，我们不需要关心连接的创建与销毁，也不需要关心线程池是怎么去维护这些连接的。</li>
+<li>对于 SQL 语句的请求在 MySQL 中是由一个个的线程去处理的。</li>
+<li>MySQL的线程获取 SQL 语句去交给 SQL 接口去处理。</li>
+<li>查询解析器:他会将 SQL 接口传递过来的 SQL 语句进行解析，翻译成 MySQL 自己能认识的语言</li>
+<li><p>MySQL会去优化这条 SQL 语句，并生成一条条的执行计划, MySQL会依据成本最小原则来选择使用对应的索引，这里的成本主要包括两个方面, IO 成本和 CPU 成本</p>
+<ul>
+<li>IO 成本: 即从磁盘把数据加载到内存的成本，MySQL 是以页的形式读取数据的，所以 IO 的成本主要和页的大小有关 </li>
+<li>CPU 成本：将数据读入内存后，还要检测数据是否满足条件和排序等 CPU 操作的成本。</li>
+</ul>
+</li>
+<li>存储引擎 :查询优化器会调用存储引擎的接口，去执行  SQL，也就是说真正执行  SQL  的动作是在存储引擎中完成的。</li>
+<li><p>Buffer Pool （缓冲池）</p>
+</li>
+<li><p>innodb 存储引擎会在缓冲池中查找数据是否存在 </p>
+</li>
+<li>发现不存在，那么就会去磁盘中加载，并将其存放在缓冲池中 </li>
+<li>该条记录会被加上一个独占锁（防止在修改的时候别人也在修改)</li>
+</ol>
+<h2 id="10-redis-">10.redis会在什么场景下用到？</h2>
+<ol>
+<li><p>缓存</p>
+<p> 合理的利用缓存不仅能够提升网站访问速度，还能大大降低数据库的压力。Redis提供了键过期功能，也提供了灵活的键淘汰策略，所以，现在Redis用在缓存的场合非常多。</p>
+</li>
+<li><p>排行榜</p>
+<p> 很多网站都有排行榜应用的，如淘宝的月度销量榜单。Redis提供的有序集合数据类构能实现各种复杂的排行榜应用。</p>
+</li>
+<li><p>计数器</p>
+<p> 如电商网站商品的浏览量、视频网站视频的播放数等。为了保证数据实时效，每次浏览都得给+1，并发量高时如果每次都请求数据库操作无疑是种挑战和压力。Redis提供的incr命令来实现计数器功能，内存操作，性能非常好，非常适用于这些计数场景。</p>
+</li>
+<li><p>分布式会话</p>
+<p> 集群模式下，在应用不多的情况下一般使用容器自带的session复制功能就能满足，当应用增多相对复杂的系统中，一般都会搭建以Redis等内存数据库为中心的session服务，session不再由容器管理，而是由session服务及内存数据库管理。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>分布式锁</p>
+<p> 在很多互联网公司中都使用了分布式技术，分布式技术带来的技术挑战是对同一个资源的并发访问，如全局ID、减库存、秒杀等场景，在并发量高的场合中，利用数据库锁来控制资源的并发访问是不太理想的，大大影响了数据库的性能。可以利用Redis的setnx功能来编写分布式的锁，如果设置返回1说明获取锁成功，否则获取锁失败。</p>
+</li>
+<li><p>社交网络</p>
+<p> 点赞、踩、关注/被关注、共同好友等是社交网站的基本功能，Redis提供的哈希、集合等数据结构能很方便的的实现这些功能。</p>
+</li>
+</ol>
+<ol start="7">
+<li><p>最新列表</p>
+<p> Redis列表结构，LPUSH可以在列表头部插入一个内容ID作为关键字，LTRIM可用来限制列表的数量，这样列表永远为N个ID，无需查询最新的列表，直接根据ID去到对应的内容页即可。</p>
+</li>
+<li><p>消息队列</p>
+<p> Redis提供了发布/订阅及阻塞队列功能，能实现一个简单的消息队列系统。另外，这个不能和专业的消息中间件相比。</p>
+</li>
+<li><p>位操作（大数据处理）</p>
+<p> 用于数据量上亿的场景下，例如几亿用户系统的签到，去重登录次数统计，某用户是否在线状态等等。</p>
+<p> 这里要用到位操作——使用setbit、getbit、bitcount命令。</p>
+</li>
+</ol>
+<h2 id="11-">11. 延迟关联：</h2>
+<p>为什么叫延迟关联？延迟两个字的关键在于延迟了对列的访问。</p>
+<p>延迟关联的原理是借助了覆盖索引。</p>
+<p>覆盖索引怎么理解？覆盖两个字的关键在于所需要的值是从索引中获取而非读取表中数据，因此叫覆盖。本人认为覆盖两个字，还有上边的延迟两个字，很精确形象。</p>
+<p>延迟关联应用场景：</p>
+<pre><code>①select * from 表 A where 条件； （select * 中的*也可以是很多列，如a，b，c，d，e……）
+</code></pre><p>假如表中数据有2000行，而经过where条件过滤后，符合的数据有50行，那么上边的sql写法存在对不需要的行中的数据先取出然后由于不符合where条件，所以最终舍弃。这里的关键点在于：提前取出了不需要数据行中的列。</p>
+<p>这个问题如何解决？</p>
+<p>改写sql为如下形式：</p>
+<pre><code>②select * from 表 A join （select B.id form 表 B where 条件）on 表A.id = 表B.id; （表A和表B为同一张表的不同别名）
+</code></pre><p>这里的关键在于：通过使用覆盖索引先获取需要的键（一般为主键），再根据取到的键关联原表获得需要的行，这可以减少MYSQL扫描那些不符合条件的行。</p>
+<p>但不是所有如sql①的写法改写为sql②后会提升性能，应用不对反而会下降，具体问题需要具体分析。</p>
+<p>大概可以分三种情况：</p>
+<p>总数据为4万行，符合条件的为3万行。改写后提升不是特别明显；</p>
+<p>总数据为4万行，符合条件的为300行。改写后性能提升很明显；</p>
+<p>总数据为50行，符合条件的为40行，改写后反而性能下降。</p>
+<p>此外，一般分页时，如limit n，m，当n特别大时，通常需要用延迟关联来解决性能问题。</p>
+<h2 id="12-in-or-">12. in和or的区别</h2>
+<p>如果in和or所在列有索引或者主键的话，or和in没啥差别，执行计划和执行时间都几乎一样。</p>
+<p>如果in和or所在列没有 索引的话，性能差别就很大了。在没有索引的情况下，随着in或者or后面的数据量越多，in的效率不会有太大的下降，但是or会随着记录越多的话性能下降 非常厉害</p>
+<p>OR，就是从a1匹配，匹配失败，去匹配a2，直到匹配成功或者一个都匹配不上，时间复杂度O(n)
+IN，先将a1, a2, ..., an变成二叉树，通过二叉树查找，时间复杂度O(log n)</p>
+<h2 id="13-null-">13 null判断对查询的影响</h2>
+<p>mysql的sql查询语句中使用is null、is not null、!=对索引并没有任何影响，并不会因为where条件中使用了is null、is not null、!=这些判断条件导致索引失效而全表扫描。</p>
+<p>mysql官方文档也已经明确说明is null并不会影响索引的使用。</p>
+<pre><code>MySQL can perform the same optimization on col_name IS NULL that it can use for col_name = constant_value. For example, MySQL can use indexes and ranges to search for NULL with IS NULL.
+</code></pre><p>为何大众误解认为is null、is not null、!=这些判断条件会导致索引失效而全表扫描呢？</p>
+<p>导致索引失效而全表扫描的通常是因为一次查询中回表数量太多。mysql计算认为使用索引的时间成本高于全表扫描，于是mysql宁可全表扫描也不愿意使用索引。使用索引的时间成本高于全表扫描的临界值可以简单得记忆为20%左右。</p>
+<p>也就是如果一条查询语句导致的回表范围超过全部记录的20%，则会出现索引失效的问题。而is null、is not null、!=这些判断条件经常会出现在这些回表范围很大的场景，然后被人误解为是这些判断条件导致的索引失效。</p>
+<h2 id="14-in-exist">14. in和exist</h2>
+<p>在高性能Mysql中说，in的关联子查询会变为exist，所以他们的效率一样，而不是内外表大小的区别</p>
+<p>一个参考文章
+<a href="https://www.cnblogs.com/wxw16/p/6105624.html">深入理解MySql子查询IN的执行和优化</a></p>
+<p>根据具体的业务情况，分析出它对应可用的经验法则，再进行不断的测试和调优，选出最优的SQL。而不仅仅是选择相信经验法则。</p>
+<h2 id="15-not-in-not-exists">15 not in 和not exists</h2>
+<p>如果查询语句使用了not in 那么内外表都进行全表扫描，没有用到索引；而not extsts 的子查询依然能用到表上的索引。所以无论那个表大，用not exists都比not in要快。</p>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

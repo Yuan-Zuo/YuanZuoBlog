@@ -1,0 +1,68 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>操作系统</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h2 id="1-">1.进程同步有几种方式?</h2>
+<p>信号量、互斥量、管道，消息队列，共享内存，socket套接字</p>
+<h2 id="2-">2.进程与线程的区别？</h2>
+<ul>
+<li><p>一个进程中可以有多个线程，多个线程共享进程的堆和方法区 资源，但是每个线程有自己的程序计数器、虚拟机栈 和 本地方法栈。</p>
+</li>
+<li><p>进程是操作系统资源分配的基本单位，而线程是处理器任务调度和执行的基本单位</p>
+</li>
+<li><p>程序之间的切换会有较大的开销；线程可以看做轻量级的进程，线程之间切换的开销小。</p>
+</li>
+<li><p>一个进程崩溃后，在保护模式下不会对其他进程产生影响，但是一个线程崩溃整个进程都死掉。所以多进程要比多线程健壮。</p>
+</li>
+</ul>
+<p>总结： 线程是进程划分成的更小的运行单位,一个进程在其执行的过程中可以产生多个线程。线程和进程最大的不同在于基本上各进程是独立的，而各线程则不一定，因为同一进程中的线程极有可能会相互影响。线程执行开销小，但不利于资源的管理和保护；而进程正相反。</p>
+<h2 id="-">操作系统中进程的调度算法有哪些吗?</h2>
+<ul>
+<li>先到先服务(FCFS)调度算法 </li>
+<li>短作业优先(SJF)的调度算法 </li>
+<li>时间片轮转调度算法 </li>
+<li>多级反馈队列调度算法 ：多级反馈队列调度算法既能使高优先级的作业得到响应又能使短作业（进程）迅速完成。UNIX 操作系统采取的便是这种调度算法。</li>
+<li>优先级调度 </li>
+</ul>
+<h2 id="-">死锁的四个条件</h2>
+<ul>
+<li>互斥</li>
+<li>请求保持</li>
+<li>不可剥夺</li>
+<li>循环等待</li>
+</ul>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

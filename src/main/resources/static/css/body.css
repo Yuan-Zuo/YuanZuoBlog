@@ -1,0 +1,20 @@
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: #2c3e50;
+    font-size: 16px;
+    background: url("../img/Windows_11.jpg");
+    background-size: cover;
+}
+
+:root {
+    --theme-color: #2980B9;
+    --text-color: #2c3e50;
+    --dark-grey: #666;
+    --navbar-height: 3.75rem;
+    --sidebar-width: 20rem;
+    --sidebar-mobile-width: 16rem;
+    --content-width: 60em;
+    --theme-color-light: #2e90d0;
+}

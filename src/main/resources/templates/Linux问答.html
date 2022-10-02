@@ -1,0 +1,139 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Linux问答</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<ol>
+<li><p>问题一：</p>
+<p> 绝对路径用什么符号表示？当前目录、上层目录用什么表示？主目录用什么表示? </p>
+<p> 答案：
+ 绝对路径： 如/etc/init.d</p>
+<p> 当前目录和上层目录： ./ ../</p>
+<p> 主目录： ~/</p>
+</li>
+<li><p>ls 命令执行什么功能？ 可以带哪些参数，有什么区别？
+ 功能： 列出指定目录中的目录，以及文件</p>
+<p> -a 列出所有文件</p>
+<p> -l 详细信息，包括大小字节数，可读可写可执行的权限等</p>
+</li>
+<li><p>查看文件内容有哪些命令可以使用？</p>
+<ul>
+<li>vi 文件名：编辑方式查看，可修改</li>
+<li>cat 文件名 ：显示全部文件内容</li>
+<li>more 文件名 ：分页显示文件内容</li>
+<li>less 文件名 ：与 more 相似，更好的是可以往前翻页</li>
+<li>tail 文件名 ：仅查看尾部，还可以指定行数</li>
+<li>head 文件名 ：仅查看头部,还可以指定行数</li>
+</ul>
+</li>
+<li><p>用什么命令对一个文件的内容进行统计？
+ wc 命令 -c 统计字节数 -l 统计行数 -w 统计字数。</p>
+</li>
+<li><p>Linux中进程有哪几种状态？在ps显示出来的信息中，分别用什么符号表示的？</p>
+<ul>
+<li>R：正在执行或者可执行，此时进程位于执行队列中。</li>
+<li>D：不可中断阻塞，通常为 IO 阻塞。</li>
+<li>S：可中断阻塞，此时进程正在等待某个事件完成。</li>
+<li>Z：僵死，进程已经终止但是尚未被其父进程获取信息。</li>
+<li>T：结束，进程既可以被作业控制信号结束，也可能是正在被追踪。</li>
+</ul>
+</li>
+<li><p>孤儿进程</p>
+<p> 一个父进程退出，而它的一个或多个子进程还在运行，那么这些子进程将成为孤儿进程。孤儿进程将被 init 进程（进程号为 1）所收养，并由 init 进程对它们完成状态收集工作。由于孤儿进程会被 init 进程收养，所以孤儿进程不会对系统造成危害。</p>
+</li>
+<li><p>僵尸进程</p>
+<p> 一个子进程的进程描述符在子进程退出时不会释放，只有当父进程通过 wait() 或 waitpid() 获取了子进程信息后才会释放。如果子进程退出，而父进程并没有调用 wait() 或 waitpid()，那么子进程的进程描述符仍然保存在系统中，这种进程称之为僵尸进程。</p>
+<p> 解决办法：将其父进程杀死，此时僵尸进程就会变成孤儿进程，从而被 init 进程所收养，这样 init 进程就会释放所有的僵尸进程所占有的资源，从而结束僵尸进程。</p>
+</li>
+<li><p>如果CPU负载很高，利用率却很低该怎么办？</p>
+<p> 说明处于等待状态的任务很多，负载越高，代表可能很多僵死的进程。通常这种情况是IO密集型的任务，大量请求在请求相同的IO，导致任务队列堆积。</p>
+<p> 解决办法：先通过top命令观察，再通过命令ps -axjf查看是否存在状态为D+状态的进程，这个状态指的就是不可中断的睡眠状态的进程。处于这个状态的进程无法终止，也无法自行退出，只能通过恢复其依赖的资源或者重启系统来解决。</p>
+</li>
+<li><p>如果CPU使用率达到100%呢？怎么排查？</p>
+<ol>
+<li>通过top找到占用率高的进程。</li>
+<li>通过top -Hp pid找到占用CPU高的线程ID。</li>
+<li>把线程ID转化为16进制，printf “0x%x\n” 958，得到线程ID0x3be。</li>
+<li>通过命令jstack 163 | grep ‘0x3be’ -C5 --color 或者 jstack 163|vim +/0x3be - 找到有问题的代码</li>
+</ol>
+</li>
+<li><p>怎样一页一页地查看一个大文件的内容呢？</p>
+<p>通过管道将命令”cat file_name.txt” 和 ’more’ 连接在一起</p>
+</li>
+<li><p>CPU的占用率会显示超过100%嘛？</p>
+<p>会，Linux 的CPU占用率是按照单核心计算的，如果该进程支持多线程，就可以占用多个核心，单个进程超过100%也是很正常的事。但如果服务器本身没什么负载，单进程或很多进程CPU占用率超过100%就需要查看原因了。</p>
+</li>
+<li><p>linux找关键字出现的次数</p>
+<p>语法：grep 字符串 文件名|wc -l ，grep输出，wc -l按行统计</p>
+</li>
+<li><p>怎么查看当前路径？</p>
+<p>查看当前路径： pwd</p>
+</li>
+<li><p>目录创建用什么命令？创建文件用什么命令？</p>
+<p>创建目录： mkdir</p>
+<p>创建文件：典型的如 touch，vi 也可以创建文件</p>
+</li>
+<li><p>怎么让一个命令在后台运行?</p>
+<p>使用 &amp; 在命令结尾来让程序自动运行。</p>
+</li>
+<li><p>哪个命令专门用来查看后台任务?</p>
+<p>job -l</p>
+</li>
+<li><p>把后台任务调到前台执行使用什么命令?</p>
+<p>把后台任务调到前台执行 fg</p>
+</li>
+<li><p>把停下的后台任务在后台执行起来用什么命令?</p>
+<p>把停下的后台任务在后台执行起来 bg</p>
+</li>
+<li><p>搜索文件用什么命令?</p>
+<ul>
+<li><p>whereis 加参数与文件名</p>
+</li>
+<li><p>locate 只加文件名</p>
+</li>
+<li><p>find 直接搜索磁盘，较慢。</p>
+</li>
+</ul>
+</li>
+<li><p>查看各类环境变量用什么命令?</p>
+<p>查看所有 env</p>
+<p>查看某个，如 home： env $HOME</p>
+</li>
+<li><p>linux查看cpu占用率的方法：</p>
+<p>查看单核CPU占用率，终端上输入“top”。</p>
+</li>
+</ol>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

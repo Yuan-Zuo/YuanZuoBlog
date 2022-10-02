@@ -1,0 +1,470 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>高性能Mysql</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="1-5-">1. 第5章 创建高性能的索引</h1>
+<h2 id="1-1-b-">1.1 B+树索引</h2>
+<p>B-Tree通常意味着所有的值都是按顺序存储的，并且每一个叶子页
+到根的距离相同。。非叶子节点节点的槽中存放了指向子节点的指针，这些指针实际上定义了子节点页中值的上限和下限。最终存储引擎要么是找到对应的值，要么该记录不存在。叶子节点比较特别，它们的指针指向的是被索引的数据。</p>
+<p>可以使用B-Tree索引的查询类型：</p>
+<ul>
+<li><p>全值匹配：</p>
+<p>  全值匹配指的是和索引中的所有列进行匹配，</p>
+</li>
+<li><p>匹配最左前缀：</p>
+<p>  即只使用索引的第一列。</p>
+</li>
+<li><p>匹配列前缀：</p>
+<p>  可以只匹配某一列的值的开头部分。例如可用于查找所有以J开头的姓的人。这里也只使用了索引的第一列。</p>
+</li>
+<li><p>匹配范围值：</p>
+<p>  例如前面提到的索引可用于查找姓在Allen和Barrymore之间的
+  人。这里也只使用了索引的第一列。</p>
+</li>
+<li><p>精确匹配某一列并范围匹配另外一列：</p>
+<p>  即第一列last_name 全匹配，第二列frst_name 范围匹配。</p>
+</li>
+</ul>
+<p>因为索引树中的节点是有序的，所以除了按值查找之外，索引还可
+以用于查询中的ORDER BY操作（按顺序查找）。一般来说，如果B+Tree可以按照某种方式查找到值，那么也可以按照这种方式用于排序。
+所以，如果ORDER BY子句满足前面列出的几种查询类型，则这个索引
+也可以满足对应的排序需求。（对应于InnoDB内幕的联合索引）</p>
+<p>B-Tree索引的限制：</p>
+<ul>
+<li>如果不是按照索引的最左列开始查找，则无法使用索引。</li>
+<li>不能跳过索引中的列。</li>
+<li>如果查询中有某个列的范围查询，则其右边所有列都无法使用索引优化查找。如果范围查询列值的数量有限，那么可以通过使用多个等于条件来代替范围条件。</li>
+</ul>
+<h2 id="1-2-">1.2 哈希索引</h2>
+<p>在MySQL中，只有Memory引擎显式支持哈希索引。这也是Memory
+引擎表的默认索引类型，Memory引擎同时也支持B-Tree索引。</p>
+<p>哈希索引特点：</p>
+<ul>
+<li>哈希索引只包含哈希值和行指针，而不存储字段值，所以不能使用索引中的值来避免读取行。</li>
+<li>哈希索引数据并不是按照索引值顺序存储的，所以也就无法用于排序。</li>
+<li>哈希索引也不支持部分索引列匹配查找，因为哈希索引始终是使用索引列的全部内容来计算哈希值的。例如，在数据列（A,B）上建立哈希索引，如果查询只有数据列A，则无法使用该索引。</li>
+<li>哈希索引只支持等值比较查询，包括=、IN()、&lt;=&gt;（&lt;&gt;和&lt;=&gt;是不同的操作）。也不支持任何范围查询，例如WHERE price&gt;100。<ul>
+<li>在MySQL中!= 和 &lt;&gt; 的功能一致，在sql92规范中建议是：!=，新的规范中建议为: &lt;&gt;</li>
+<li>is 专门用来判断是否为 NULL，而 = 则是用来判断非NULL以外的所有数据类型使用。而 &lt;=&gt; 则是前两者合起来。</li>
+</ul>
+</li>
+<li>访问哈希索引的数据非常快，除非有很多哈希冲突</li>
+<li>如果哈希冲突很多的话，一些索引维护操作的代价也会很高。例如，如果在某个选择性很低（哈希冲突很多）的列上建立哈希索引，那么当从表中删除一行时，存储引擎需要遍历对应哈希值的链表中的每一行，找到并删除对应行的引用，冲突越多，代价越大。</li>
+</ul>
+<p>如果存储引擎不支持哈希索引，则可以模拟哈希索引，这可以享受一些哈希索引的便利，例如只需要很小的索引就可以为超长的键创建索引。</p>
+<p>思路很简单：在B-Tree基础上创建一个伪哈希索引。这和真正的哈希索引不是一回事，因为还是使用B-Tree进行查找，但是它使用哈希值而不是键本身进行索引查找。你需要做的就是在查询的WHERE 子句中手动指定使用哈希函数。</p>
+<p>下面是一个实例，例如需要存储大量的URL，并需要根据URL进行搜索查找。如果使用B-Tree来存储URL，存储的内容就会很大，因为URL本身都很长。正常情况下会有如下查询：</p>
+<pre><code>mysql&gt; SELECT id FROM url WHERE url=&quot;http://www.mysql.com&quot;;
+</code></pre><p>若删除原来URL列上的索引，而新增一个被索引的url_crc 列，使
+用CRC32 做哈希，就可以使用下面的方式查询：</p>
+<pre><code>mysql&gt; SELECT id FROM url WHERE url=&quot;http://www.mysql.com&quot;
+-&gt; AND url_crc=CRC32(&quot;http://www.mysql.com&quot;);
+</code></pre><p>这样做的性能会非常高，因为MySQL优化器会使用这个选择性很高而体积很小的基于url_crc 列的索引来完成查找。即使有多个记录有相同的索引值，查找仍然很
+快，只需要根据哈希值做快速的整数比较就能找到索引条目，然后一一比较返回对应的行。另外一种方式就是对完整的URL字符串做索引，那样会非常慢。</p>
+<p>这样实现的缺陷是需要维护哈希值。可以手动维护，也可以使用触发器实现。</p>
+<p>如果采用这种方式，记住不要使用SHA1() 和MD5() 作为哈希函数。因为这两个函数计算出来的哈希值是非常长的字符串，会浪费大量空间，比较时也会更慢。CRC32() 返回的是32位的整数。</p>
+<p>CRC32() 会出现大量的哈希冲突，则可以考虑自己实现一个简单的64位哈希函数。这个自定义函数要返回整数，而不是字符串。一个简单的办法可以使用MD5() 函数返回值的一部分来作为自定义哈希函数。</p>
+<p>处理哈希冲突。当使用哈希索引进行查询的时候，必须在WHERE子句中包含常量值：</p>
+<pre><code>mysql&gt; SELECT id FROM url WHERE url=&quot;http://www.mysql.com&quot;
+-&gt; AND url_crc=CRC32(&quot;http://www.mysql.com&quot;);
+</code></pre><p>一旦出现哈希冲突，另一个字符串的哈希值也恰好是1560514994，则下面的查询是无法正确工作的。</p>
+<pre><code>mysql&gt; SELECT id FROM url WHERE url_crc=CRC32(&quot;http://www.mysql.com&quot;
+</code></pre><h2 id="1-3-">1.3 索引的优点</h2>
+<p>最常见的B-Tree索引，按照顺序存储数据，所以MySQL可以用来
+做<strong>ORDER BY</strong> 和<strong>GROUP BY</strong> 操作。总结下来索引有如下三个优点：</p>
+<ol>
+<li>索引大大减少了服务器需要扫描的数据量。</li>
+<li>索引可以帮助服务器避免排序和临时表。</li>
+<li>索引可以将随机I/O变为顺序I/O。</li>
+</ol>
+<h2 id="1-4-">1.4 高性能的索引策略</h2>
+<h3 id="1-4-1-">1.4.1 独立的列</h3>
+<p>“独立的列”是指索引列不能是表达式的一部分，也不能是函数的参数。</p>
+<p>例如，下面这个查询无法使用actor_id 列的索引：</p>
+<pre><code>mysql&gt; SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5
+</code></pre><p>下面是另一个常见的错误：</p>
+<pre><code>mysql&gt; SELECT ... WHERE TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col) &lt;= 10;
+</code></pre><h3 id="1-4-2-">1.4.2 前缀索引和索引选择性</h3>
+<p>有时候需要索引很长的字符列，这会让索引变得大且慢。一个策略是前面提到过的模拟哈希索引。但有时候这样做还不够。</p>
+<p>通常可以索引开始的部分字符，这样可以大大节约索引空间，从而提高索引效率。但这样也会降低索引的选择性。索引的选择性是指，不重复的索引值（也称为基数，cardinality）和数据表的记录总数（#T）的比值，范围从1/#T到1之间。</p>
+<p>前缀应该足够长，以使得前缀索引的选择性接近于索引整个列。换句话说，前缀的“基数”应该接近于完整列的“基数”。</p>
+<p>下面演示一下如何创建前缀索引：</p>
+<pre><code>mysql&gt; ALTER TABLE sakila.city_demo ADD KEY (city(7));
+</code></pre><p>前缀索引是一种能使索引更小、更快的有效办法，但另一方面也有其缺点：MySQL无法使用前缀索引做ORDER BY 和GROUP BY ，也无法使用前缀索引做覆盖扫描。</p>
+<h3 id="1-4-3-">1.4.3 多列索引</h3>
+<pre><code>CREATE TABLE t (
+c1 INT,
+c2 INT,
+c3 INT,
+KEY(c1),
+KEY(c2),
+KEY(c3)
+);
+</code></pre><p>在多个列上建立独立的单列索引大部分情况下并不能提高MySQL的查询性能。MySQL 5.0和更新版本引入了一种叫“索引合并”（indexmerge）的策略，一定程度上可以使用表上的多个单列索引来定位指定的行。</p>
+<p>这种算法有三个变种：OR条件的联合（union），AND 条件的相交（intersection），组合前两种情况的联合及相交。下面的查询就是使用了两个索引扫描的联合，通过EXPLAIN 中的Extra 列可以看到这点：</p>
+<pre><code>mysql&gt; EXPLAIN SELECT film_id, actor_id FROM sakila.film_actor
+-&gt; WHERE actor_id = 1 OR film_id = 1\G
+</code></pre><p>索引合并策略有时候是一种优化的结果，但实际上更多时候说明了表上的索引建得很糟糕：</p>
+<p>当出现服务器对多个索引做相交操作时（通常有多个AND 条件），通常意味着需要一个包含所有相关列的多列索引，而不是多个独立的单列索引。</p>
+<h3 id="1-4-4-">1.4.4 选择合适的索引列顺序</h3>
+<p>对于如何选择索引的列顺序有一个经验法则：将选择性最高的列放到索引最前列。在某些场景可能有帮助，但通常不如避免随机IO和排序那么重要，考虑问题需要更全面。这里只是说明，这个经验法则可能没有你想象的重要。</p>
+<p>当不需要考虑排序和分组时，将选择性最高的列放在前面通常是很好的。在这种情况下，这样设计的索引确实能够最快地过滤出需要的行。然而，性能不只是依赖于所有索引列的选择性（整体基数），也和值的分布有关。</p>
+<h3 id="1-4-5-">1.4.5 聚簇索引</h3>
+<p>在InnoDB表中按主键顺序插入行</p>
+<p>如果正在使用InnoDB表并且没有什么数据需要聚集，那么可以定
+义一个代理键（surrogate key）作为主键，这种主键的数据应该和应用
+无关，最简单的方法是使用AUTO_INCREMENT 自增列。这样可以保证数
+据行是按顺序写入，对于根据主键做关联操作的性能也会更好。</p>
+<p>从性能的角度考虑，使用UUID来作为聚簇索引则会很糟糕：它使得聚簇索引的插入变得完全随机，这是最坏的情况，使得数据没有任何聚集特性。</p>
+<h3 id="1-4-6-">1.4.6 覆盖索引</h3>
+<p>不是所有类型的索引都可以成为覆盖索引。覆盖索引必须要存储索
+引列的值，而哈希索引、空间索引和全文索引等都不存储索引列的值，
+所以MySQL只能使用B-Tree索引做覆盖索引。</p>
+<p>当发起一个被索引覆盖的查询（也叫做索引覆盖查询）时，在EXPLAIN 的Extra 列可以看到“Using index”的信息。</p>
+<p>回想一下，InnoDB的二级索引的叶子节点都包含了主键的值，这意味着InnoDB的二级索引可以有效地利用这些“额外”的主键列来覆盖查询。</p>
+<p>例如，sakila.actor 使用InnoDB存储引擎，并在last_name 字段有二级索引，虽然该索引的列不包括主键actor_id ，但也能够用于对actor_id 做覆盖查询：</p>
+<h3 id="1-4-7-">1.4.7 使用索引扫描来做排序</h3>
+<p>MySQL有两种方式可以生成有序的结果：通过排序操作；或者按索引顺序扫描 (13) ；如果EXPLAIN 出来的type 列的值为“index ”，则说明MySQL使用了索引扫描来做排序（不要和Extra 列的“Using index”搞混淆了）。</p>
+<p>只有当索引的列顺序和ORDER BY 子句的顺序完全一致，并且所有列的排序方向（倒序或正序）都一样时，MySQL才能够使用索引来对结果做排序 (14) 。如果查询需要关联多张表，则只有当ORDER BY 子句引用的字段全部为第一个表时，才能使用索引做排序。ORDER BY 子句和查找型查询的限制是一样的：需要满足索引的最左前缀的要求；否则，MySQL都需要执行排序操作，而无法利用索引排序。</p>
+<p>有一种情况下ORDER BY 子句可以不满足索引的最左前缀的要求，就是前导列为常量的时候。如果WHERE 子句或者JOIN 子句中对这些列指定了常量，就可以“弥补”索引的不足。</p>
+<pre><code>UNIQUE KEY rental_date (rental_date,inventory_id,customer_id),
+
+
+mysql&gt; EXPLAIN SELECT rental_id, staff_id FROM sakila.rental
+-&gt; WHERE rental_date = &#39;2005-05-25&#39;
+-&gt; ORDER BY inventory_id, customer_id\G
+</code></pre><p>即使ORDER BY 子句不满足索引的最左前缀的要求，也可以用于查询排序，这是因为索引的第一列被指定为一个常数。</p>
+<p>是因为查询为索引的第一列提供了常量条件，而使用第二列
+进行排序，将两列组合在一起，就形成了索引的最左前缀：</p>
+<pre><code>... WHERE rental_date = &#39;2005-05-25&#39; ORDER BY inventory_id DESC;
+</code></pre><p>下面是一些不能使用索引做排序的查询：</p>
+<ul>
+<li>查询使用了两种不同的排序方向，但是索引列都是正序排序的：</li>
+</ul>
+<pre><code>... WHERE rental_date = &#39;2005-05-25&#39; ORDER BY inventory_id DESC, customer_id ASC;
+</code></pre><ul>
+<li>查询的ORDER BY 子句中引用了一个不在索引中的列：<pre><code>... WHERE rental_date=&#39;2005-05-25&#39; ORDER BY inventory_id，staff_id;
+</code></pre></li>
+<li>下面这个查询在索引列的第一列上是范围条件，所以MySQL无法使用索引的其余列：<pre><code>... WHERE rental_date &gt; &#39;2005-05-25&#39; ORDER BY inventory_id, customer_id;
+</code></pre></li>
+<li>这个查询在inventory_id列上有多个等于条件。对于排序来说，这也是一种范围查询：<pre><code>... WHERE rental_date = &#39;2005-05-25&#39; AND inventory_id IN(1,2) ORDER BY customer_
+</code></pre>使用索引做排序的一个最重要的用法是当查询同时有ORDER BY 和LIMIT 子句的时候。后面我们会具体介绍这些内容。</li>
+</ul>
+<h3 id="1-4-8-">1.4.8 冗余和重复索引</h3>
+<p>重复索引是指在相同的列上按照相同的顺序创建的相同类型的索引。应该避免这样创建重复索引，发现以后也应该立即移除。</p>
+<p>一个经验不足的用户可能想创建一个主键，先加上唯一限制，然后再加上索引以供查询使用。事实上，MySQL的唯一限制和主键限制都是通过索引实现的，因此，上面的写法实际上在相同的列上创建了三个重复的索引。</p>
+<p>冗余索引和重复索引有一些不同。如果创建了索引（A，B ），再创建索引（A ）就是冗余索引，因为这只是前一个索引的前缀索引。因此索引（A，B ）也可以当作索引（A ）来使用（这种冗余只是对B-Tree索引来说的）。但是如果再创建索引（B，A ），则不是冗余索引，索引（B ）也不是，因为B 不是索引（A，B ）的最左前缀列。另外，其他不同类型的索引（例如哈希索引或者全文索引）也不会是B-Tree索引的冗余索引，而无论覆盖的索引列是什么。</p>
+<p>冗余索引通常发生在为表添加新索引的时候。例如，有人可能会增加一个新的索引（A，B ）而不是扩展已有的索引（A ）。还有一种情况是将一个索引扩展为（A，ID ），其中ID是主键，对于InnoDB来说主键列已经包含在二级索引中了，所以这也是冗余的。</p>
+<p>在决定哪些索引可以被删除的时候要非常小心。回忆一下，在前面的InnoDB的示例表中，因为二级索引的叶子节点包含了主键值，所以在列（A ）上的索引就相当于在（A，ID ）上的索引。如果有像WHEREA=5 ORDER BY ID 这样的查询，这个索引会很有作用。但如果将索引扩展为（A，B ），则实际上就变成了（A，B，ID ），那么上面查询的ORDER BY 子句就无法使用该索引做排序，而只能用文件排序了。</p>
+<h3 id="1-4-9-">1.4.9 索引和锁</h3>
+<p>索引可以让查询锁定更少的行。如果你的查询从不访问那些不需要的行，那么就会锁定更少的行，从两个方面来看这对性能都有好处。首先，虽然InnoDB的行锁效率很高，内存使用也很少，但是锁定行的时候仍然会带来额外开销；其次，锁定超过需要的行会增加锁争用并减少并发性。</p>
+<p>如果不能使用索引查找和锁定行的话问题可能会更糟糕，MySQL会做全表扫描并锁住所有的行，而不管是不是需要。</p>
+<p>关于InnoDB、索引和锁有一些很少有人知道的细节：InnoDB在二级索引上使用共享（读）锁，但访问主键索引需要排他（写）锁。这消除了使用覆盖索引的可能性，并且使得SELECT FOR UPDATE 比LOCK INSHARE MODE 或非锁定查询要慢很多。</p>
+<h2 id="1-5-">1.5 索引案例学习</h2>
+<p>假设要设计一个在线约会网站，用户信息表有很多列，包括国家、地区、城市、性别、眼睛颜色，等等。网站必须支持上面这些特征的各种组合来搜索用户，还必须允许根据用户的最后在线时间、其他会员对用户的评分等对用户进行排序并对结果进行限制。如何设计索引满足上面的复杂需求呢?</p>
+<p>是第一件需要考虑的事情是需要使用索引来排序，还是先检索数据再排序。使用索引排序会严格限制索引和查询的设计。如果MySQL使用某个索引进行范围查询，也就无法再使用另一个索引（或者是该索引的后续字段）进行排序了。如果这是很常见的WHERE 条件，那么我们当然就会认为很多查询需要做排序操作（例如文件排序filesort）。</p>
+<h3 id="1-5-1-">1.5.1 支持多种过滤条件</h3>
+<p>country 列的选择性通常不高，但可能很多查询都会用到。sex 列的选择性肯定很低，但也会在很多查询中用到。所以考虑到使用的频率，还是建议在创建不同组合索引的时候将（sex，country ）列作为前缀。</p>
+<p>但根据传统的经验不是说不应该在选择性低的列上创建索引的吗？</p>
+<p>这么做有两个理由：</p>
+<ul>
+<li>第一点，如前所述几乎所有的查询都会用到sex 列。前面曾提到，几乎每一个查询都会用到sex 列，甚至会把网站设计成每次都只能按某一种性别搜索用户。</li>
+<li>更重要的一点是，即使查询没有使用sex列也可以通过下面的“诀窍”绕过。</li>
+</ul>
+<p>这个“诀窍”就是：如果某个查询不限制性别，那么可以通过在查询条件中新增AND SEX IN（&#39;m&#39;,&#39;f&#39;） 来让MySQL选择该索引。这样写并不会过滤任何行，和没有这个条件时返回的结果相同。但是必须加上这个列的条件，MySQL才能够匹配索引的最左前缀。</p>
+<p>接下来，需要考虑其他常见WHERE 条件的组合，（sex，country，age ）上的索引就是一个很明显的选择，另外很有可能还需要（sex，country，region，age ）和（sex，country，region，city，age ）这样的组合索引。这样就会需要大量的索引。如果想尽可能重用索引而不是建立大量的组合索引，可以使用前面提到的IN() 的技巧来避免同时需要（sex，country，age ）和（sex，country，region，age ）的索引。</p>
+<p>我们一直将age 列放在索引的最后面。为什么要放在索引的最后？我们总是尽可能让MySQL使用更多的索引列，因为查询只能使用索引的最左前缀，直到遇到第一个范围条件列。前面提到的列在WHERE 子句中都是等于条件，但是age列则多半是范围查询（例如查找年龄在18～25岁之间的人）。</p>
+<p>前面提到可以在索引中加入更多的列，并通过IN() 的方式覆盖那些不在WHERE 子句中的列。但这种技巧也不能滥用，否则可能会带来麻烦。因为每额外增加一个IN() 条件，优化器需要做的组合都将以指数形式增加，最终可能会极大地降低查询性能。</p>
+<p>新版本的MySQL在组合数超过一定数量后就不再进行执行计划评估了，这可能会导致MySQL不能很好地利用索引。</p>
+<h1 id="2-6-">2. 第6章 查询性能优化</h1>
+<h2 id="2-1-">2.1 慢查询基础：优化数据访问</h2>
+<p>查询性能低下最基本的原因是访问的数据太多。</p>
+<h3 id="2-1-1-">2.1.1  是否向数据库请求了不需要的数据</h3>
+<ul>
+<li><p>查询不需要的记录：</p>
+<p>  （例如在新闻网站中取出100条记录，但是只是在页面上显示前面10条）。实际情况是MySQL会查询出全部的结果集，然后抛弃其中大部分数据。最简单有效的解决方法就是在这样的查询后面加上LIMIT 。</p>
+</li>
+<li><p>多表关联时返回全部列</p>
+</li>
+<li><p>总是取出全部列</p>
+<p>  每次看到SELECT * 的时候都需要用怀疑的眼光审视，是不是真的需要返回全部的列？取出全部列，会让优化器无法完成索引覆盖扫描这类优化，还会为服务器带来额外的I/O、内存和CPU的消耗。</p>
+</li>
+</ul>
+<h3 id="2-1-2-mysql-">2.1.2 MySQL是否在扫描额外的记录</h3>
+<p>一般MySQL能够使用如下三种方式应用WHERE 条件，从好到坏依次为：</p>
+<ul>
+<li>在索引中使用WHERE 条件来过滤不匹配的记录。这是在存储引擎层完成的。</li>
+<li><p>使用索引覆盖扫描（在Extra 列中出现了Using index）来返回记录，直接从索引中过滤不需要的记录并返回命中的结果。这是在MySQL服务器层完成的，但无须再回表查询记录。</p>
+</li>
+<li><p>从数据表中返回数据，然后过滤不满足条件的记录（在Extra 列中出现Using Where）。这在MySQL服务器层完成，MySQL需要先从数据表读出记录然后过滤。</p>
+</li>
+</ul>
+<p>如果发现查询需要扫描大量的数据但只返回少数的行，那么通常可以尝试下面的技巧去优化它：</p>
+<ul>
+<li>使用索引覆盖扫描，把所有需要用的列都放到索引中，这样存储引
+擎无须回表获取对应行就可以返回结果了。</li>
+<li>改变库表结构。例如使用单独的汇总表（这是我们在第4章中讨论的办法）。</li>
+<li>重写这个复杂的查询，让MySQL优化器能够以更优化的方式执行这个查询（这是本章后续需要讨论的问题）。</li>
+</ul>
+<h2 id="2-3-">2.3 重构查询的方式</h2>
+<h3 id="2-3-1-">2.3.1 切分查询</h3>
+<p>删除旧的数据就是一个很好的例子。定期地清除大量数据时，如果用一个大的语句一次性完成的话，则可能需要一次锁住很多数据、占满整个事务日志、耗尽系统资源、阻塞很多小的但重要的查询。将一个大的DELETE语句切分成多个较小的查询可以尽可能小地影响MySQL性能，同时还可以减少MySQL复制的延迟。</p>
+<p>一次删除一万行数据一般来说是一个比较高效而且对服务器影响也最小的做法。
+同时，需要注意的是，如果每次删除数据后，都暂停一会儿再做下一次删除，这样也可以将服务器上原本一次性的压力分散到一个很长的时间段中，就可以大大降低对服务器的影响，还可以大大减少删除时锁的持有时间。</p>
+<h3 id="2-3-2-">2.3.2 分解关联查询</h3>
+<p>很多高性能的应用都会对关联查询进行分解。简单地，可以对每一个表进行一次单表查询，然后将结果在应用程序中进行关联。</p>
+<p>用分解关联查询的方式重构查询有如下的优势：</p>
+<ul>
+<li><p>让缓存的效率更高。许多应用程序可以方便地缓存单表查询对应的结果对象。</p>
+</li>
+<li><p>将查询分解后，执行单个查询可以减少锁的竞争。</p>
+</li>
+<li>可以减少冗余记录的查询。</li>
+</ul>
+<h2 id="2-4-">2.4 优化特定类型的查询</h2>
+<h3 id="2-4-1-count-">2.4.1 优化COUNT()查询</h3>
+<p>COUNT() 是一个特殊的函数，它可以统计某个列值的数量，也可以统计行数。在统计列值时要求列值是非空的（不统计NULL ）。如果在COUNT() 的括号中指定了列或者列的表达式，则统计的就是这个表达式有值的结果数 (24) 。因为很多人对NULL 理解有问题，所以这里很容易产生误解。</p>
+<p>COUNT() 的另一个作用是统计结果集的行数。当MySQL确认括号内的表达式值不可能为空时，实际上就是在统计行数。最简单的就是当我们使用COUNT（<em>） 的时候，这种情况下通配符</em>并不会像我们猜想的那样扩展成所有的列，实际上，它会忽略所有的列而直接统计所有的行数。</p>
+<p>关于Count函数表达式的用法，Count(表达式 Or null)</p>
+<p>如count(sex= ‘男生’ or NULL) 这部分，为什么要加上or NULL，直接count(sex=‘男生’)有什么问题吗？不就是要找sex= &#39;男生’的数据吗，为什么要计算NULL的数据。</p>
+<p>答案：
+因为当 sex不是男生时 sex=‘男生’ 结果false。不是 NULL，count在值是NULL是不统计数， （count(‘任意内容’)都会统计出所有记录数，因为count只有在遇见null时不计数，即count(null)==0，因此前者单引号内不管输入什么值都会统计出所有记录数），至于加上or NULL ， 很像其他编程里的or运算符，第一个表达式是true就是不执行or后面的表达式，第一个表达式是false 执行or后面的表达式 。当sex不为男生时sex= ‘男生’ or NULL 的结果是NULL，Count才不会统计上这条记录数。</p>
+<p>关于MyISAM的神话</p>
+<p>一个容易产生的误解就是：MyISAM的COUNT() 函数总是非常快，不过这是有前提条件的，即只有没有任何WHERE 条件的COUNT（<em>） 才非常快，因为此时无须实际地去计算表的行数。MySQL可以利用存储引擎的特性直接获得这个值。如果MySQL知道某列col 不可能为NULL值，那么MySQL内部会将COUNT（col） 表达式优化为COUNT（\</em>） 。</p>
+<p>简单的优化</p>
+<p>有时候可以使用MyISAM在COUNT（*） 全表非常快的这个特性，来加速一些特定条件的COUNT() 的查询。在下面的例子中，我们使用标准数据库world 来看看如何快速查找到所有ID 大于5的城市。可以像下面这样来写这个查询：</p>
+<pre><code>mysql&gt; SELECT COUNT（*） FROM world.City WHERE ID&gt;5;
+</code></pre><p>如果将条件反转一下，先查找ID小于等于5的城市数，然后用总城市数一
+减就能得到同样的结果，却可以将扫描的行数减少到5行以内：</p>
+<pre><code>mysql&gt; SELECT (SELECT COUNT(*) FROM world.City) - COUNT(*)
+-&gt; FROM world.City WHERE ID &lt;= 5;
+</code></pre><p>使用近似值</p>
+<p>有时候某些业务场景并不要求完全精确的COUNT 值，此时可以用近
+似值来代替。EXPLAIN 出来的优化器估算的行数就是一个不错的近似
+值，执行EXPLAIN 并不需要真正地去执行查询，所以成本很低。</p>
+<h3 id="2-4-2-">2.4.2 优化关联查询</h3>
+<ul>
+<li><p>确保ON 或者USING 子句中的列上有索引。在创建索引的时候就要考虑到关联的顺序。当表A 和表B 用列c 关联的时候，如果优化器的关联顺序是B、A ，那么就不需要在B表的对应列上建上索引。一般来说,只需要在关联顺序中的第二个表的相应列上创建索引。</p>
+</li>
+<li><p>确保任何的GROUP BY 和ORDER BY 中的表达式只涉及到一个表中的
+列，这样MySQL才有可能使用索引来优化这个过程。</p>
+</li>
+</ul>
+<h3 id="2-4-3-">2.4.3  优化子查询</h3>
+<p>关于子查询优化我们给出的最重要的优化建议就是尽可能使用关联查询代替，至少当前的MySQL版本需要这样。“尽可能使用关联”并不是绝对的，如果使用的是MySQL
+5.6或更新的版本或者MariaDB，那么就可以直接忽略关于子查询的这些建议了。</p>
+<h3 id="2-4-4-limit-">2.4.4 优化LIMIT分页</h3>
+<p>一个非常常见又令人头疼的问题就是，在偏移量非常大的时候，例如可能是LIMIT 1000,20 这样的查询，这时MySQL需要查询10 020条记录然后只返回最后20条，前面10000条记录都将被抛弃，这样的代价非常高。</p>
+<p>优化此类分页查询的一个最简单的办法就是尽可能地使用索引覆盖扫描，而不是查询所有的列。然后根据需要做一次关联操作再返回所需的列。</p>
+<pre><code>mysql&gt; SELECT film_id, description FROM sakila.film ORDER BY title LIMIT 50, 5;
+</code></pre><pre><code>mysql&gt; SELECT film.film_id, film.description
+-&gt; FROM sakila.film
+-&gt; INNER JOIN (
+-&gt; SELECT film_id FROM sakila.film
+-&gt; ORDER BY title LIMIT 50, 5
+-&gt; ) AS lim USING(film_id);
+</code></pre><p>这里的“延迟关联”将大大提升查询效率，它让MySQL扫描尽可能少的页面，获取需要访问的记录后再根据关联列回原表查询需要的所有列。这个技术也可以用于优化关联查询中的LIMIT 子句。</p>
+<p>LIMIT 的问题，其实是OFFSET 的问题，它会导致MySQL扫描大量不需要的行然后再抛弃掉。如果可以使用书签记录上次取数据的位置，那么下次就可以直接从该书签记录的位置开始扫描，这样就可以避免使用OFFSET 。</p>
+<h3 id="2-4-5-sql_calc_found_rows">2.4.5 优化SQL_CALC_FOUND_ROWS</h3>
+<p>分页的时候，另一个常用的技巧是在LIMIT 语句中加上SQL_CALC_FOUND_ROWS 提示（hint），这样就可以获得去掉LIMIT 以后满足条件的行数，因此可以作为分页的总数。实际上，加上这个提示以后，不管是否需要，MySQL都会扫描所有满足条件的行，然后再抛弃掉不需要的行，而不是在满足LIMIT 的行数后就终止扫描。所以该提示的代价可能非常高。</p>
+<p>一个更好的设计是将具体的页数换成“下一页”按钮，假设每页显示20条记录，那么我们每次查询时都是用LIMIT 返回21条记录并只显示20条，如果第21条存在，那么我们就显示“下一页”按钮，否则就说明没有更多的数据，也就无须显示“下一页”按钮了。</p>
+<p>有时候也可以考虑使用EXPLAIN 的结果中的rows 列的值来作为结果集总数的近似值（实际上Google的搜索结果总数也是个近似值）。</p>
+<h3 id="2-4-6-union-">2.4.6 优化UNION查询</h3>
+<p>除非确实需要服务器消除重复的行，否则就一定要使用UNION ALL
+，如果没有ALL关键字，MySQL会给临时表加上DISTINCT 选项，这会导致对整个临时表的数据做唯一性检查。这样做的代价非常高。即使有ALL 关键字，MySQL仍然会使用临时表存储结果。</p>
+<p>有时，MySQL无法将限制条件从外层“下推”到内层，这使得原本能够限制部分返回结果的条件无法应用到内层查询的优化上。</p>
+<p>例如，想将两个子查询结果联合起来，然后再取前20条记录，那么MySQL会将两个表都存放到同一个临时表中，然后再取出前20行记录：</p>
+<pre><code class="lang-Mysql">(SELECT first_name, last_name
+FROM sakila.actor
+ORDER BY last_name)
+UNION ALL
+(SELECT first_name, last_name
+FROM sakila.customer
+ORDER BY last_name)
+LIMIT 20;
+</code></pre>
+<p>这条查询将会把actor 中的200条记录和customer 表中的599条记录存放在一个临时表中，然后再从临时表中取出前20条。可以通过在UNION 的两个子查询中分别加上一个LIMIT 20 来减少临时表中的数据：</p>
+<pre><code>(SELECT first_name, last_name
+FROM sakila.actor
+ORDER BY last_name
+LIMIT 20)
+UNION ALL
+(SELECT first_name, last_name
+FROM sakila.customer
+ORDER BY last_name
+LIMIT 20)
+LIMIT 20;
+</code></pre><p>现在中间的临时表只会包含40条记录了，除了性能考虑之外，在这里还需要注意一点：从临时表中取出数据的顺序并不是一定的，所以如果想获得正确的顺序，还需要加上一个全局的ORDER BY 和LIMIT 操作。</p>
+<h3 id="2-4-7-">2.4.7 最大值和最小值优化</h3>
+<p>对于MIN() 和MAX() 查询，MySQL的优化做得并不好。这里有一个
+例子：</p>
+<pre><code>mysql&gt; SELECT MIN(actor_id) FROM sakila.actor WHERE first_name=&#39;PENELOPE&#39;;
+</code></pre><p>因为在first_name 字段上并没有索引，因此MySQL将会进行一次
+全表扫描。</p>
+<p>如果MySQL能够进行主键扫描，那么理论上，当MySQL读到第一个满足条件的记录的时候，就是我们需要找的最小值了，因为主键是严格按照actor_id 字段的大小顺序排列的。但是MySQL这时只会做全表扫描，我们可以通过查看SHOW STATUS 的全表扫描计数器来验证这一点。</p>
+<p>一个曲线的优化办法是移除MIN()，然后使用LIMIT来将查询
+重写如下：</p>
+<pre><code>mysql&gt; SELECT actor_id FROM sakila.actor USE INDEX(PRIMARY)
+-&gt; WHERE first_name = &#39;PENELOPE&#39; LIMIT 1;
+</code></pre><p>一般我们通过SQL告诉服务器我们需要什么数据，由服务器来决定如何最优地获取数
+据，不过在这个案例中，我们其实是告诉MySQL如何去获取我们需要的数据，通过SQL并不能一眼就看出我们其实是想要一个最小值。确实如此，有时候为了获得更高的性能，我们不得不放弃一些原则。</p>
+<h3 id="2-4-8-">2.4.8  在同一个表上查询和更新</h3>
+<p> MySQL不允许对同一张表同时进行查询和更新。这其实并不是优
+化器的限制，如果清楚MySQL是如何执行查询的，就可以避免这种情
+况。下面是一个无法运行的SQL，虽然这是一个符合标准的SQL语句。</p>
+<pre><code>update b 
+set aaa=select max(MAX_def_60M) as max from b
+
+[Err] 1064 - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &#39;select max(MAX_def_60M) as max from b&#39; at line 2
+</code></pre><p>可以通过使用生成表的形式来绕过上面的限制，因为MySQL只会
+把这个表当作一个临时表来处理。</p>
+<p>解决办法：再嵌套一层查询</p>
+<pre><code>update b 
+set aaa=
+(select max 
+from 
+(select max(MAX_def_60M) as max from b) as temp
+)
+</code></pre><p>不能同时读写的原因：mysql读写锁锁定的问题</p>
+<p>加了共享锁的对象，可以继续加共享锁，不能再加排它锁。加了排它锁后，不能再加任何锁。</p>
+<p>那么说我在更新一个表的时候，我锁定了一行，这一行我是不能加读锁的了，所以这时我查询这张表，就会出现这种问题。</p>
+<h3 id="2-4-9-for-update-lock-in-share-mode">2.4.9 FOR UPDATE和LOCK IN SHARE MODE</h3>
+<p>这两个提示主要控制SELECT 语句的锁机制，但只对实现了行级锁的存储引擎有效。使用该提示会对符合查询条件的数据行加锁。对于INSERT...SELECT 语句是不需要这两个提示的，因为对于MySQL 5.0和更新版本会默认给这些记
+录加上读锁。（可以禁用该默认行为，但不是个好主意，在后面关
+于复制和备份的章节中将解释这一点。）</p>
+<p>唯一内置的支持这两个提示的引擎就是InnoDB。另外需要记住的是，这两个提示会让某些优化无法正常使用，例如索引覆盖扫描。InnoDB不能在不访问主键的情况下排他地锁定行，因为行的版本信息保存在主键中。</p>
+<p>糟糕的是，这两个提示经常被滥用，很容易造成服务器的锁争用问题，后面章节我们将讨论这点。应该尽可能地避免使用这两个提示，通常都有其他更好的方式可以实现同样的目的。</p>
+<p>尽可能快地完成需要做的事情。尽量使用UPDATE 代替先SELECT FOR UPDATE 再UPDATE 的写法，因为事务提交的速度越快，持有的锁时间就越短，可以大大减少竞争和加速串行执行效率。将已经处理完成和未处理的数据分开，保证数据集足够小。</p>
+<p>如果表上有任何的锁，那么对这个表的任何查询语句都是无法被缓存的。例如，某个事务执行了SELECT FOR UPDATE 语句，那么在这个锁释放之前，任何其他的事务都无法从查询缓存中读取与这个表相关的缓存结果。</p>
+<h2 id="3-e-">3 附录E 锁的调试</h2>
+<p>当我们给某个表增加一列新字段，或者只是进行查询，就有可能发现其他请求锁住了操作的表或者行。此时，通常你所想做的事就是找出查询阻塞的原因，从而知道该杀死哪个进程。这个附录显示了如何达到这两个目标。</p>
+<h3 id="3-1-">3.1服务器级别的锁等待</h3>
+<p>下面是MySQL服务器使用的几种类型的锁。</p>
+<ul>
+<li><p>表锁</p>
+<p>  表可以被显式的读锁和写锁进行锁定。这些锁有许多的变种，例如本地读锁。你可以在MySQL手册LOCK TABLES 部分了解到这些变种。除了这些显式的锁外，查询过程中还有隐式的锁。</p>
+</li>
+<li><p>全局锁</p>
+<p>  可以通过FLUSH TABLES WITH READ LOCK 或设置read_only=1来获取单个全局读锁。它与任何表锁都冲突。</p>
+</li>
+<li><p>命名锁</p>
+<p>  命名锁是表锁的一种，服务器在重命名或删除一个表时创建。</p>
+</li>
+<li><p>字符锁</p>
+<p>  你可以用GET_LOCK() 及其相关函数在服务器级别内锁住和释放任意一个字符串。</p>
+</li>
+</ul>
+<h3 id="3-2-">3.2 表锁</h3>
+<p>表锁既可以是显式的也可以是隐式的。显式的锁用LOCK TABLES 创
+建。例如，如果在mysql 会话中执行下列命令，将在sakila.film 上获
+得一个显式的锁。</p>
+<pre><code>mysql&gt; LOCK TABLES sakila.film READ;
+</code></pre><p>如果再在另外一个会话中执行如下的命令，查询会挂起并且不会完成。</p>
+<pre><code>mysql&gt; LOCK TABLES sakila.film WRITE;
+</code></pre><p>你可能想知道关于隐式锁和显式锁的差异。从内部来说，它们有相同的结构，由相同的MySQL服务器代码来控制。从外部来说，你可以通过LOCK TABLES 和UNLOCK TABLES 来控制显式锁。</p>
+<p>然而，当涉及非MyISAM存储引擎时，它们之间有一个非常重要的区别。当创建显式锁时，它会按你的指令来做，但隐式锁就比较隐蔽并“有魔幻性”。服务器会在需要时自动地创建和释放隐式锁，并将它们传递给存储引擎。存储引擎感知到后，可能会“转换”这些锁。例如，InnoDB有这样的相关规则：对一个给定的服务器级别的表锁，InnoDB应该为其创建特定类型的InnoDB表锁。这也使得操作人很难理InnoDB幕后到底做了什么。</p>
+<h3 id="3-3-">3.3找出谁持有锁</h3>
+<p>目前没有SQL命令可以显示哪个线程持有阻塞你的查询的表锁。如
+果运行SHOW PROCESSLIST ，你会看到等待锁的进程，而不是哪个进程
+持有这些锁。</p>
+<p>幸运的是，有一个debug 命令可以打印关于锁的信息到服务器的错误日志中，你可以使用mysqladmin 工具来运行这个命令：</p>
+<pre><code>$ mysqladmin debug
+</code></pre><p>在错误日志的输出中包括了许多的调试信息。我们是这样创建这些输出的：在一个连接中锁住表，然后在另外一个连接中尝试再次对它加锁。</p>
+<pre><code>Thread database.table_name Locked/Waiting Lock_type
+7 sakila.film Locked - read Read lock without concurrent inserts
+8 sakila.film Waiting - write Highest priority write l
+</code></pre><p>可以看到线程8正在等待线程7持有的锁。</p>
+<h3 id="3-4-">3.4全局读锁</h3>
+<p>MySQL服务器还实现了一个全局读锁，可以如下获取该锁。</p>
+<pre><code>mysql&gt; FLUSH TABLES WITH READ LOCK;
+</code></pre><p>如果此时在另外一个会话中尝试再锁这个表，结果会像之前一样挂
+起。</p>
+<pre><code>mysql&gt; LOCK TABLES sakila.film WRITE
+</code></pre><p>如何判断这个查询正在等待全局读锁而不是一个表级别的锁？
+请看SHOW PROCESSLIST 的输出。</p>
+<pre><code>mysql&gt; SHOW PROCESSLIST\G
+...
+Id: 22
+User: baron
+Host: localhost
+db: NULL
+Command: Query
+Time: 9
+State: Waiting for release of readlock
+Info: LOCK TABLES sakila.film WRITE
+</code></pre><p>注意，查询的状态是Waiting for release of readlock 。这就是
+说查询正在等待一个全局读锁而不是表级别锁。</p>
+<p>MySQL没有提供查出谁持有全局读锁的方法。</p>
+<h3 id="3-5-">3.5 命名锁</h3>
+<p>命名锁是一种表锁：服务器在重命名或删除一个表时创建。命名锁与普通的表锁相冲突，无论是隐式的还是显式的。例如，如果和之前一样使用LOCK TABLES ，然后在另外一个会话中尝试对此表重命名，查询会挂起，但这次不是处于Locked状态。</p>
+<pre><code>mysql&gt; RENAME TABLE sakila.film2 TO sakila.film;
+</code></pre><p>和前面一样，从进程列表找到获得锁的进程，其状态是Waiting for table 。</p>
+<p>也可以在SHOW OPEN TABLES 输出中看到命名锁的影响。</p>
+<pre><code>mysql&gt;SHOW OPEN TABLES;
++----------+-----------+- -
+Database | Table      | In use | Name locked |
+sakila    film_text         3             0
+sakila    film              2             1
+sakila    film2             1             1
+</code></pre><p>In_use</p>
+<p>table 的 table 锁或锁请求数。例如，如果一个 Client 端使用LOCK TABLE t1 WRITE获取 table 的锁，则In_use将为 1.如果另一个 Client 端在 table 保持锁定状态时发出LOCK TABLE t1 WRITE，则 Client 端将阻止 await 该锁，但是锁定请求导致In_use为 2.如果计数为零，则 table 已打开但当前未使用。 In_use也由处理程序...打开语句增加，而由处理程序...关闭减少。</p>
+<p>注意，两个名字（原名和新名）都被锁住了。sakila.film_text因sakila.film 上有个指向它的触发器而被锁，这也解释了另外一种锁方式，它们可以暗地里将自己放置到预期之外的地方。</p>
+<p>查询sakila.film ，触发器会使你悄悄地接触sakila.film_text ，因而隐式
+地锁住它。触发器实际不需要因重命名触发，确实如此，因此从技术上讲并不需要锁，但事实是：MySQL的锁有时可能并不具有你所期望的细粒度。</p>
+<p>是由于命名锁在等待一个普通的表锁，而这通过先前展示的mysqladmin debug 可以看到。</p>
+<h3 id="3-6-">3.6 用户锁</h3>
+<p>在服务器中实现的最后一种锁是用户锁，它基本是一个命名互斥量。你需要指定锁的名称字符串，以及等待超时秒数。</p>
+<pre><code>mysql&gt; SELECT GET_LOCK( &#39;my lock&#39;，100);
+</code></pre><p>指令成功返回，这个线程就在命名互斥量上持有了一把锁。如果另外一个线程此时尝试锁相同的字符串，它将会挂起直到超时。这次进程列表显示了一个不同的进程状态。</p>
+<pre><code>mysql&gt; SHOW PROCESSLIST\G
+*************************** 1. row ***************************
+Id: 22
+User: baron
+Host: localhost
+db: NULL
+Command: Query
+Time: 9
+State: User lock
+Info: SELECT GET_LOCK(&#39;my lock&#39;, 100)
+</code></pre><p>User lock 状态是这种类型的锁独有的。MySQL没有提供查明谁拥有用户锁的方法。</p>
+<h3 id="3-7-innodb-">3.7 InnoDB中的锁等待</h3>
+<p>InnoDB在SHOW INNODB STATUS 的输出中显露了一些锁信息。如果事务正在等待某个锁，这个锁会显示在SHOW INNODB STATUS 输出的TRANSACTIONS 部分中。</p>
+<p>不幸的是，由于看不到谁拥有锁，因此很难确定哪个事务导致这个问题。</p>
+<p><strong>使用INFORMATION_SCHEMA表</strong></p>
+<p>使用SHOW INNODB STATUS 来查看锁绝对是老派做法，现在InnoDB有INFORMATION_SCHEMA 来显露它的事务和锁。</p>
+<p>具体例子pdf1228页</p>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

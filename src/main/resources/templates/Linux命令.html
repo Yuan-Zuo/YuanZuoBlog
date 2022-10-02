@@ -1,0 +1,1675 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Linux命令</title>
+	  <link href="/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+	  <link href="/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="-linux-">第一部份 Linux 的规划与安装</h1>
+<h2 id="1-1-">1.1 文本模式下命令的下达</h2>
+<p>command [-options] parameter1 parameter2 ...</p>
+<p>命令     选项      参数(1)    参数(2) </p>
+<p>说明： </p>
+<ol>
+<li>命令, 选项, 参数等这几个咚咚中间以空格来区分，不论空几格 shell 都视为一格；  </li>
+<li>命令太长的时候，可以使用反斜杠 () 来跳脱[Enter]符号，使命令连续到下一行。 
+注意！反斜杠后就立刻接特殊字符，才能跳脱！ </li>
+<li>在 Linux 系统中，英文大小写字母是不一样的。举例来说， cd 与 CD 并不同。 </li>
+</ol>
+<h3 id="1-1-1-">1.1.1 基础命令:</h3>
+<ol>
+<li><p>显示日期的命令： date</p>
+<p>参数:+%Y%m%d</p>
+</li>
+<li>显示日历的命令： cal</li>
+<li><p>简单好用的计算器： bc</p>
+<p>注意！要离开bc回到命令提示字符时，务必要输入『quit』</p>
+</li>
+</ol>
+<h3 id="1-1-2-">1.1.2 重要的几个热键</h3>
+<p>[Tab]按键:</p>
+<p>他具有『命令补全』与『文件补齐』的功能。 可以避免我们打错命令或文件名。 我们举下面的例子来说明。上一小节我们不是提到 cal 这个命令吗？如果我在命令列输入 ca 再按两次 [tab] 按键， 所有以ca为开头的命令都被显示出来。</p>
+<ul>
+<li>[Tab] 接在一串命令的第一个字的后面，则为命令补全。</li>
+<li>[Tab] 接在一串命令的第二个字以后时，则为『文件补齐。</li>
+</ul>
+<p>[Ctrl]-c 按键：</p>
+<p> 如果你想让当前的程序『停掉』的话，可以输入：[Ctrl]与c按键， 那就是中断目前程序的按键。</p>
+<p> [Ctrl]-d 按键</p>
+<p>这个组合按键通常代表着： 『键盘输入结束(End Of File, EOF 或 End Of Input)』的意思！ 另外，他也可以用来取代exit的输入呢！例如你想要直接离开文字接口，可以直接按下[Ctrl]-d就能够直接离开了(相当于输入exit啊！)。</p>
+<h2 id="1-2-linux-man-page-info-page">1.2 Linux系统的在线求助man page与info page</h2>
+<p>man是manual(操作说明)的简写。『man 命令』 可以显示命令的说明。</p>
+<p>如果你知道某些关键词的话， 那么可以在任何时候输入『/word』，来主动搜寻关键词。</p>
+<h1 id="-linux-">第二部分 Linux 文件、目录与磁盘格式</h1>
+<h2 id="2-1-">2.1 使用者与群组</h2>
+<p>1.文件拥有者</p>
+<p> 由于Linux是个多人多任务的系统，因此可能常常会有多人同时使用这部主机来进行工作的情况发生， 为了考虑每个人的隐私权，因此，这个『文件拥有者』的角色就显的相当的重要了！</p>
+<p>例如当你将你的e-mail情书转存成文件之后，放在你自己的家目录，你总不希望被其他人看见自己的情书吧？ 这个时候，你就把该文件设定成『只有文件拥有者，就是我，才能看与修改这个文件的内容』， 那么即使其他人知道你有这个相当『有趣』的文件，不过由于你有设定适当的权限， 所以其他人自然也就无法知道该文件的内容啰！</p>
+<p>2.群组概念</p>
+<p>群组最有用的功能之一，就是当你在团队开发资源的时候啦！ 举例来说，假设有两组专题生在我的主机里面，第一个专题组别为projecta，里面的成员有 class1, class2, class3三个；第二个专题组别为projectb，里面的成员有class4, class5, class6。 这两个专题之间是有竞争性质的，但却要缴交同一份报告。每组的组员之间必须要能够互相修改对方的数据， 但是其他组的组员则不能看到本组自己的文件内容，此时该如何是好？</p>
+<p>在Linux底下这样的限制是很简单啦！我可以经由简易的文件权限设定，就能限制非自己团队(亦即是群组啰) 的其他人不能够阅览内容啰！而且亦可以让自己的团队成员可以修改我所建立的文件！ 同时，如果我自己还有私人隐密的文件，仍然可以设定成让自己的团队成员也看不到我的文件数据。 很方便吧！</p>
+<p>另外，如果teacher这个账号是projecta与projectb这两个专题的老师， 他想要同时观察两者的进度，因此需要能够进入这两个群组的权限时，你可以设定teacher这个账号， 『同时支持projecta与projectb这两个群组！』，也就是说：每个账号都可以有多个群组的支持呢！</p>
+<p>3.其他人</p>
+<h2 id="2-2-linux-">2.2 Linux文件权限概念</h2>
+<p>以root的身份登入Linux之后，下达『 ls -al 』查看权限，选项『-al』则表示列出所有的文件详细的权限与属性 (包含隐藏档，就是文件名第一个字符为『 . 』的文件)。</p>
+<h3 id="2-2-1-drwxr-xr-x">2.2.1 文件属性第一栏 drwxr-xr-x</h3>
+<p>第一个字符代表这个文件是『目录、文件或链接文件等等』：</p>
+<ul>
+<li>当为[ d ]则是目录，例如上表档名为『.gconf』的那一行；</li>
+<li>当为[ - ]则是文件，例如上表档名为『install.log』那一行；</li>
+<li>若是[ l ]则表示为连结档(link file)；</li>
+<li>若是[ b ]则表示为装置文件里面的可供储存的接口设备(可随机存取装置)；</li>
+<li>若是[ c ]则表示为装置文件里面的串行端口设备，例如键盘、鼠标(一次性读取</li>
+</ul>
+<p>接下来的字符中，以三个为一组，且均为『rwx』 的三个参数的组合。其中，[ r ]代表可读(read)、[ w ]代表可写(write)、[ x ]代表可执行(execute)。如果没有权限，就会出现减号[ - ]。</p>
+<ul>
+<li>第一组为『文件拥有者的权限』，</li>
+<li>第二组为『同群组的权限』；</li>
+<li>第三组为『其他非本群组的权限』。</li>
+</ul>
+<h3 id="2-2-2-">2.2.2 改变文件属性与权限</h3>
+<ul>
+<li>chgrp ：改变文件所属群组</li>
+<li>chown ：改变文件拥有者</li>
+<li>chmod ：改变文件的权限, SUID, SGID, SBIT等等的特性</li>
+</ul>
+<p>如果要连目录下的所有次目录或文件同时更改文件权限的话，直接加上 -R 的选项即可！</p>
+<p>-R : 进行递归(recursive)的持续变更，亦即连同次目录下的所有文件都变更。</p>
+<p>那么什么时候要使用chown或chgrp呢？，最常见的例子就是在复制文件给你之外的其他人时， 我们使用最简单的cp指令来说明好了：</p>
+<pre><code>[root@www ~]# cp 来源文件 目标文件
+</code></pre><p>由于复制行为(cp)会复制执行者的属性与权限，所以即使你将文件拿给使用者了，那他仍然无法修改的， 所以你就必须要将这个文件的拥有者与群组修改一下。</p>
+<p>改变权限 chmod：</p>
+<p>文件权限的改变使用的是chmod这个指令，权限的设定方法有两种， 分别可以使用数字或者是符号来进行权限的变更。</p>
+<p>1.数字类型改变文件权限</p>
+<p>各权限的分数对照表如下：
+r:4
+w:2
+x:1
+例如当权限为： [-rwxrwx---] 分数则是：</p>
+<ul>
+<li>owner = rwx = 4+2+1 = 7</li>
+<li>group = rwx = 4+2+1 = 7</li>
+<li>others= --- = 0+0+0 = 0
+所以等一下我们设定权限的变更时，该文件的权限数字就是770啦！变更权限的指令chmod的语法是这样的：</li>
+</ul>
+<pre><code>chmod [-R] xyz 文件或目录
+chmod 777 .bashrc
+</code></pre><p>2.符号类型改变文件权限</p>
+<p>我们可以由u(user), g(group), o(others)来代表三种身份的权限,此外 a 则代表 all 即全部的身份！那么读写的权限就可以写成r, w, x！也就是可以使用底下的方式来看：</p>
+<p>chmod    u/g/o/a    +(加入)/-(除去)/=(设定)    r/w/x    文件或目录</p>
+<p>假如我们要『设定』一个文件的权限成为『-rwxr-xr-x』时，基本上就是：</p>
+<pre><code>chmod  u=rwx,go=rx  .bashrc
+</code></pre><p>注意！那个 u=rwx,go=rx 是连在一起的，中间并没有任何空格！</p>
+<h3 id="2-2-2-">2.2.2目录与文件之权限意义</h3>
+<ul>
+<li>r (read)：可读取此一文件的实际内容，如读取文本文件的文字内容等；</li>
+<li>w (write)：可以编辑、新增或者是修改该文件的内容(但不含删除该文件)；</li>
+<li>x (execute)：该文件具有可以被系统执行的权限。</li>
+</ul>
+<p>在Windows底下一个文件是否具有执行的能力是藉由『 扩展名 』来判断的， 例如：.exe, .bat, .com 等等，但是在Linux底下，我们的文件是否能被执行，则是藉由是否具有『x』这个权限来决定的！跟档名是没有绝对的关系的！</p>
+<p>权限对目录的重要性</p>
+<ul>
+<li><p>r ：</p>
+<p>当你具有读取(r)一个目录的权限时，表示你可以查询该目录下的文件名数据。 所以你就可以利用 ls 这个指令将该目录的内容列表显示出来！</p>
+</li>
+<li><p>w ：</p>
+<ul>
+<li>建立新的文件与目录；</li>
+<li>删除已经存在的文件与目录(<strong>不论该文件的权限为何！</strong>)</li>
+<li>将已存在的文件或目录进行更名；</li>
+<li>搬移该目录内的文件、目录位置。</li>
+</ul>
+</li>
+<li><p>x ：
+目录的x代表的是用户能否进入该目录成为工作目录的用途！</p>
+</li>
+</ul>
+<p>如果你在某目录下不具有x的权限， 那么你就无法切换到该目录下，也就无法执行该目录下的任何指令，即使你具有该目录的r的权限。</p>
+<h3 id="2-2-3-">2.2.3绝对路径与相对路径</h3>
+<p>绝对路径：由根目录(/)开始写起的文件名或目录名称， 例如 /home/dmtsai/.bashrc；</p>
+<p>相对路径：相对于目前路径的文件名写法。 例如 ./home/dmtsai 或 ../../home/dmtsai/ 等等。反正开头不是 / 就属于相对路径的写法</p>
+<p>特别注意这两个特殊的目录：</p>
+<ul>
+<li>.  ：代表当前的目录，也可以使用 ./ 来表示；</li>
+<li>.. ：代表上一层目录，也可以 ../ 来代表。</li>
+</ul>
+<p>网络文件常常提到类似『./run.sh』之类的数据，这个指令的意义为何？</p>
+<p>答：由于指令的执行需要变量(bash章节才会提到)的支持，若你的执行文件放置在本目录，并且本目录并非正规的执行文件目录(/bin, /usr/bin等为正规)，此时要执行指令就得要严格指定该执行档。『./』代表『本目录』的意思，所以『./run.sh』代表『执行本目录下， 名为run.sh的文件』啰！</p>
+<p>需要特别注意的是：<strong>所有目录底下都会存在的两个目录</strong>，分别是『.』与『..』 分别代表此层与上一级目录的意思。</p>
+<p>例题：请问在Linux底下，根目录下有没有上一级目录(..)存在？</p>
+<p>答：
+若使用『 ls -al / 』去查询，可以看到根目录下确实存在 . 与 .. 两个目录，再仔细的查阅， 可发现这两个目录的属性与权限完全一致，这代表根目录的上一层(..)与根目录自己(.)是同一个目录。</p>
+<h3 id="2-2-4-">2.2.4 目录的相关操作</h3>
+<ul>
+<li>cd：变换目录</li>
+<li>pwd：显示目前的目录</li>
+<li>mkdir：创建一个新的目录</li>
+<li>rmdir：删除一个空的目录</li>
+</ul>
+<h3 id="2-2-5-ls-cp-rm">2.2.5 文件与目录管理 ls cp rm</h3>
+<ul>
+<li>ls <ul>
+<li>-a  ：全部的文件，连同隐藏档( 开头为 . 的文件) 一起列出来(常用)</li>
+<li>-d  ：仅列出目录本身，而不是列出目录内的文件数据(常用)</li>
+<li>-l  ：长数据串列出，包含文件的属性与权限等等数据；(常用)</li>
+</ul>
+</li>
+<li>cp <ul>
+<li>-a  ：相当於 -pdr 的意思，至於 pdr 请参考下列说明；(常用)</li>
+<li>-d  ：若来源档为连结档的属性(link file)，则复制连结档属性而非文件本身；</li>
+<li>-i  ：若目标档(destination)已经存在时，在覆盖时会先询问动作的进行(常用)</li>
+<li>-p  ：连同文件的属性一起复制过去，而非使用默认属性(备份常用)；</li>
+<li>-r  ：递回持续复制，用於目录的复制行为；(常用)</li>
+</ul>
+</li>
+</ul>
+<p>在默认的条件中， cp 的来源档与目的档的权限是不同的，目的档的拥有者通常会是命令操作者本身。</p>
+<ul>
+<li><p>rm (移除文件或目录)</p>
+<ul>
+<li>-f  ：就是 force 的意思，忽略不存在的文件，不会出现警告信息；</li>
+<li>-i  ：互动模式，在删除前会询问使用者是否动作</li>
+<li>-r  ：递回删除啊！最常用在目录的删除了！这是非常危险的选项！！！</li>
+</ul>
+</li>
+<li><p>mv (移动文件与目录，或更名)</p>
+</li>
+</ul>
+<h3 id="2-2-6-cat-head-tail-">2.2.6  文件内容查阅 cat head tail...</h3>
+<ul>
+<li>cat  由第一行开始显示文件内容</li>
+<li>tac  从最后一行开始显示，可以看出 tac 是 cat 的倒著写！</li>
+<li>nl   显示的时候，顺道输出行号！</li>
+<li>more 一页一页的显示文件内容</li>
+<li>less 与 more 类似，但是比 more 更好的是，他可以往前翻页！</li>
+<li>head 只看头几行</li>
+<li>tail 只看尾巴几行</li>
+<li>od   以二进位的方式读取文件内容！</li>
+</ul>
+<p>在 more 的时候，我们并没有办法向前面翻， 只能往后面看，但若使用了 less 时，就可以使用 [pageup] [pagedown] 等按键的功能来往前往后翻看文件。</p>
+<p>除此之外，在 less 里头可以拥有更多的『搜寻』功能喔！不止可以向下搜寻，也可以向上搜寻，可以输入的命令有：</p>
+<ul>
+<li>空白键    ：向下翻动一页；</li>
+<li>[pagedown]：向下翻动一页；</li>
+<li>[pageup]  ：向上翻动一页；</li>
+<li>/字串     ：向下搜寻『字串』的功能；</li>
+<li>?字串     ：向上搜寻『字串』的功能；</li>
+<li>n         ：重复前一个搜寻 (与 / 或 ? 有关！)</li>
+<li>N         ：反向的重复前一个搜寻 (与 / 或 ? 有关！)</li>
+<li>q         ：离开 less 这个程序；</li>
+</ul>
+<p>head:</p>
+<pre><code>[root@www ~]# head [-n number] 文件 
+选项与参数：
+-n  ：后面接数字，代表显示几行的意思
+
+#若没有加上 -n 这个选项时，默认只显示十行,若要显示前 20 行，就得要这样：
+[root@www ~]# head -n 20 /etc/man.config
+</code></pre><p> -n 选项后面如果接的是负数，代表列前的所有行数， 但不包括后面100行。</p>
+<p>tail: </p>
+<p>用法跟 head 的用法差不多类似，只是显示的是后面几行就是了！默认也是显示十行，若要显示非十行，就加 -n number 的选项即可。</p>
+<p>当下达『tail -n +100 /etc/man.config』 代表该文件从100行以后都会被列出来。</p>
+<h3 id="2-2-7-touch">2.2.7 修改文件时间或建置新档： touch</h3>
+<p>在 ls 这个命令的介绍时，有提到每个文件在linux底下都会记录许多的时间参数， 其实是有三个主要的变动时间，那么三个时间的意义是什么呢？</p>
+<ul>
+<li><p>modification time (mtime)：
+当该文件的『内容数据』变更时，就会升级这个时间！内容数据指的是文件的内容，而不是文件的属性或权限喔！</p>
+</li>
+<li><p>status time (ctime)：
+当该文件的『状态 (status)』改变时，就会升级这个时间，举例来说，像是权限与属性被更改了，都会升级这个时间啊。</p>
+</li>
+<li><p>access time (atime)：
+当『该文件的内容被取用』时，就会升级这个读取时间 (access)。举例来说，我们使用 cat 去读取 /etc/man.config ， 就会升级该文件的 atime 了。</p>
+</li>
+</ul>
+<p>touch 这个命令最常被使用的情况是：</p>
+<ul>
+<li>创建一个空的文件；</li>
+<li>将某个文件日期修订为目前 (mtime 与 atime)</li>
+</ul>
+<h2 id="2-3-">2.3 文件与目录的默认权限与隐藏权限</h2>
+<h3 id="2-3-1-umask">2.3.1 文件默认权限：umask</h3>
+<p>创建一个新的文件或目录时，他的默认权限与 umask 这个玩意儿有关。umask 就是指定 『目前使用者在创建文件或目录时候的权限默认值』， 那么如何得umask 呢？他的指定条件以底下的方式来指定：</p>
+<pre><code>[root@www ~]# umask
+0022             &lt;==与一般权限有关的是后面三个数字！
+[root@www ~]# umask -S
+u=rwx,g=rx,o=rx
+</code></pre><p>在默认权限的属性上，目录与文件是不一样的。默认的情况如下：</p>
+<ul>
+<li><p>若使用者创建为『文件』则默认『没有可运行( x )权限』，亦即只有 rw 这两 个项目，也就是最大为 666 分，默认权限如下：
+-rw-rw-rw-</p>
+</li>
+<li><p>若使用者创建为『目录』，则由於 x 与是否可以进入此目录有关，因此默认为所有权限均开放，亦即为 777 分，默认权限如下：
+drwxrwxrwx</p>
+</li>
+</ul>
+<p>umask 的分数指的是『该默认值需要减掉的权限！』因为 r、w、x 分别是 4、2、1 分，也就是说，当要拿掉能写的权限，就是输入 2 分。</p>
+<p>那么如何配置 umask 呢？简单的很，直接在 umask 后面输入 xxx 就好了！</p>
+<pre><code>[root@www ~]# umask 002
+</code></pre><p>例题：</p>
+<p>假设你的 umask 为 003 ，请问该 umask 情况下，创建的文件与目录权限为？</p>
+<p>答：</p>
+<p>umask 为 003 ，所以拿掉的权限为 --------wx，因此：</p>
+<p>文件： (-rw-rw-rw-) - (--------wx) = -rw-rw-r--</p>
+<p>目录： (drwxrwxrwx) - (--------wx) = drwxrwxr--</p>
+<h3 id="2-3-2-">2.3.2 文件隐藏属性：</h3>
+<pre><code>[root@www ~]# chattr [+-=][ASacdistu] 文件或目录名称
+选项与参数：
++   ：添加某一个特殊参数，其他原本存在参数则不动。
+-   ：移除某一个特殊参数，其他原本存在参数则不动。
+=   ：配置一定，且仅有后面接的参数
+
+
+a  ：当配置 a 之后，这个文件将只能添加数据，而不能删除也不能修改数据，只有root才能配置这个属性。 
+
+i  ：他可以让一个文件『不能被删除、改名、配置连结,也无法
+     写入或新增数据！』对於系统安全性有相当大的助益！只有 root 能配置此属性
+</code></pre><p>lsattr (显示文件隐藏属性):</p>
+<pre><code>[root@www ~]# lsattr [-adR] 文件或目录
+选项与参数：
+-a ：将隐藏档的属性也秀出来；
+-d ：如果接的是目录，仅列出目录本身的属性而非目录内的档名；
+-R ：连同子目录的数据也一并列出来！ 
+
+[root@www tmp]# chattr +aij attrtest
+[root@www tmp]# lsattr attrtest
+----ia---j--- attrtest
+</code></pre><h3 id="2-3-3-suid-sgid-sbit">2.3.3 文件特殊权限： SUID, SGID, SBIT</h3>
+<p>....</p>
+<h2 id="2-4-">2.4 命令与文件的搜寻：</h2>
+<h3 id="2-4-1-which">2.4.1 命令档名的搜寻：which</h3>
+<p>我们知道在终端机模式当中，连续输入两次[tab]按键就能够知道使用者有多少命令可以下达。 那你知不知道这些命令的完整档名放在哪里？举例来说，ls 这个常用的命令放在哪里呢？ 就透过 which 或 type 来找寻吧！</p>
+<pre><code>[root@www ~]# which [-a] command
+选项或参数：
+-a ：将所有由 PATH 目录中可以找到的命令均列出，而不止第一个被找到的命令名称
+
+范例一：分别用root与一般帐号搜寻 ifconfig 这个命令的完整档名
+[root@www ~]# which ifconfig
+/sbin/ifconfig  
+[root@www ~]# su - vbird &lt;==切换身份成为 vbird 去！
+[vbird@www ~]$ which ifconfig
+/usr/bin/which: no ifconfig in (/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin
+:/home/vbird/bin)         &lt;==见鬼了！竟然一般身份帐号找不到！
+# 因为 which 是根据使用者所配置的 PATH 变量内的目录去搜寻可运行档的！所以，
+# 不同的 PATH 配置内容所找到的命令当然不一样啦！因为 /sbin 不在 vbird 的 
+# PATH 中，找不到也是理所当然的啊！了乎
+</code></pre><h3 id="2-4-1-">2.4.1 文件档名的搜寻：</h3>
+<p>通常 find 不很常用的！因为速度慢之外，也很操硬盘！通常我们都是先使用 whereis 或者是 locate 来检查，如果真的找不到了，才以 find 来搜寻。因为 whereis 与 locate 是利用数据库来搜寻数据，所以相当的快速，而且并没有实际的搜寻硬盘。 而当使用 whereis 或者是 locate 时，都会以此数据库文件的内容为准， 因此，有时后你还会发现使用这两个命令时，会找到已经被杀掉的文件，而且也找不到最新的刚刚创建的文件。</p>
+<p>1.whereis (寻找特定文件):</p>
+<pre><code>
+[root@www ~]# whereis [-bmsu] 文件或目录名
+选项与参数：
+...
+
+范例一：请用不同的身份找出 ifconfig 这个档名
+[root@www ~]# whereis ifconfig 
+ifconfig: /sbin/ifconfig /usr/share/man/man8/ifconfig.8.gz
+[root@www ~]# su - vbird        &lt;==切换身份成为 vbird
+[vbird@www ~]$ whereis ifconfig &lt;==找到同样的结果喔！
+ifconfig: /sbin/ifconfig /usr/share/man/man8/ifconfig.8.gz
+[vbird@www ~]$ exit              &lt;==回归身份成为 root 去！
+# 注意看，明明 which 一般使用者找不到的 ifconfig 却可以让 whereis 找到！
+# 这是因为系统真的有 ifconfig 这个『文件』，但是使用者的 PATH 并没有加入 /sbin
+# 所以，未来你找不到某些命令时，先用文件搜寻命令找找看再说！
+</code></pre><p>2.locate:</p>
+<pre><code>[root@www ~]# locate [-ir] keyword
+选项与参数：
+...
+
+范例一：找出系统中所有与 passwd 相关的档名
+[root@www ~]# locate passwd
+/etc/passwd
+/etc/passwd-
+/etc/news/passwd.nntp
+/etc/pam.d/passwd
+....(底下省略)....
+</code></pre><p>这个 locate 的使用更简单，直接在后面输入『文件的部分名称』后，就能够得到结果。 举上面的例子来说，我输入 locate passwd ，那么在完整档名 (包含路径名称) 当中，只要有 passwd 在其中， 就会被显示出来的。</p>
+<p>因为locate是经由数据库来搜寻的，，所以当你新创建起来的文件， 却还在数据库升级之前搜寻该文件，那么 locate 会告诉你『找不到！』。</p>
+<p>升级 locate 数据库的方法非常简单，直接输入『 updatedb 』就可以了！ updatedb 命令会去读取 /etc/updatedb.conf 这个配置档的配置，然后再去硬盘里面进行搜寻档名的动作， 最后就升级整个数据库文件罗！因为 updatedb 会去搜寻硬盘，所以当你运行 updatedb 时，可能会等待数分钟的时间喔！</p>
+<p>3.find</p>
+<pre><code>
+[root@www ~]# find [PATH] [option] [action]
+选项与参数：
+1. 与时间有关的选项：共有 -atime, -ctime 与 -mtime
+...
+
+范例一：将过去系统上面 24 小时内有更动过内容 (mtime) 的文件列出
+[root@www ~]# find / -mtime 0
+# 那个 0 是重点！0 代表目前的时间，所以，从现在开始到 24 小时前，
+# 有变动过内容的文件都会被列出来！那如果是三天前的 24 小时内？
+# find / -mtime 3 有变动过的文件都被列出的意思！
+
+范例二：寻找 /etc 底下的文件，如果文件日期比 /etc/passwd 新就列出
+[root@www ~]# find /etc -newer /etc/passwd
+# -newer 用在分辨两个文件之间的新旧关系是很有用的！
+</code></pre><p>如果你要找的文件是具有特殊属性的，例如 SUID 、文件拥有者、文件大小等等， 那么利用 locate 是没有办法达成你的搜寻的！此时 find 就显的很重要啦！ 另外，find 还可以利用万用字节来找寻档名。举例来说，你想要找出 /etc 底下档名包含 httpd 的文件， 那么你就可以这样做：</p>
+<pre><code>[root@www ~]# find /etc -name &#39;*httpd*&#39;
+</code></pre><h2 id="2-4-">2.4 极重要！权限与命令间的关系：</h2>
+<p>一、让使用者能进入某目录成为『可工作目录』的基本权限为何：</p>
+<p>可使用的命令：例如 cd 等变换工作目录的命令；
+目录所需权限：使用者对这个目录至少需要具有 x 的权限
+额外需求：如果使用者想要在这个目录内利用 ls 查阅档名，则使用者对此目录还需要 r 的权限。
+二、使用者在某个目录内读取一个文件的基本权限为何？</p>
+<p>可使用的命令：例如本章谈到的 cat, more, less等等
+目录所需权限：使用者对这个目录至少需要具有 x 权限；
+文件所需权限：使用者对文件至少需要具有 r 的权限才行！
+三、让使用者可以修改一个文件的基本权限为何？</p>
+<p>可使用的命令：例如 nano 或未来要介绍的 vi 编辑器等；
+目录所需权限：使用者在该文件所在的目录至少要有 x 权限；
+文件所需权限：使用者对该文件至少要有 r, w 权限
+四、让一个使用者可以创建一个文件的基本权限为何？</p>
+<p>目录所需权限：使用者在该目录要具有 w,x 的权限，重点在 w 啦！
+五、让使用者进入某目录并运行该目录下的某个命令之基本权限为何？</p>
+<p>目录所需权限：使用者在该目录至少要有 x 的权限；
+文件所需权限：使用者在该文件至少需要有 x 的权限</p>
+<h2 id="2-5-linux-">2.5 Linux 系统常见的压缩命令</h2>
+<p>1.gzip, zcat</p>
+<p>gzip 可以说是应用度最广的压缩命令了, gzip 可以解开 compress, zip 与 gzip 等软件所压缩的文件。 </p>
+<pre><code>[root@www ~]# gzip [-cdtv#] 档名
+[root@www ~]# zcat 档名.gz
+选项与参数：
+-c  ：将压缩的数据输出到萤幕上，可透过数据流重导向来处理；
+-d  ：解压缩的参数；
+-t  ：可以用来检验一个压缩档的一致性～看看文件有无错误；
+-v  ：可以显示出原文件/压缩文件的压缩比等资讯；
+-#  ：压缩等级，-1 最快，但是压缩比最差、-9 最慢，但是压缩比最好！默认是 -6
+
+范例一：将 /etc/man.config 复制到 /tmp ，并且以 gzip 压缩
+[root@www ~]# cd /tmp 
+[root@www tmp]# cp /etc/man.config .
+[root@www tmp]# gzip -v man.config
+man.config:      56.1% -- replaced with man.config.gz
+</code></pre><p>在默认的状态下原本的文件会被压缩成为 .gz 的档名， 原始文件就不再存在了。使用 gzip 压缩的文件在 Windows 系统中，可以被 WinRAR 这个软件解压缩。</p>
+<pre><code>范例二：由於 man.config 是文字档，请将范例一的压缩档的内容读出来！
+[root@www tmp]# zcat man.config.gz
+# 由於 man.config 这个原本的文件是是文字档，因此我们可以尝试使用 zcat  去读取！
+# 此时萤幕上会显示 man.config.gz 解压缩之后的文件内容！
+
+范例三：将范例一的文件解压缩
+[root@www tmp]# gzip -d man.config.gz
+# 与 gzip 相反， gzip -d 会将原本的 .gz 删除，产生原本的 man.config 文件。
+
+范例四：将范例三解开的 man.config 用最佳的压缩比压缩，并保留原本的文件
+[root@www tmp]# gzip -9 -c man.config &gt; man.config.gz
+</code></pre><p>2.bzip2, bzcat</p>
+<p>...</p>
+<h2 id="2-6-tar">2.6 打包命令: tar</h2>
+<p> tar 可以将多个目录或文件打包成一个大文件，同时还可以透过 gzip/bzip2 的支持，将该文件同时进行压缩！ 目前 Windows 的 WinRAR 也支持 .tar.gz 档名的解压缩呢。</p>
+<pre><code>
+[root@www ~]# tar [-j|-z] [cv] [-f 创建的档名] filename... &lt;==打包与压缩
+[root@www ~]# tar [-j|-z] [tv] [-f 创建的档名]             &lt;==察看档名
+[root@www ~]# tar [-j|-z] [xv] [-f 创建的档名] [-C 目录]   &lt;==解压缩
+选项与参数：
+-c  ：创建打包文件，可搭配 -v 来察看过程中被打包的档名(filename)
+-t  ：察看打包文件的内容含有哪些档名，重点在察看『档名』就是了；
+-x  ：解打包或解压缩的功能，可以搭配 -C (大写) 在特定目录解开
+      特别留意的是， -c, -t, -x 不可同时出现在一串命令列中。
+-j  ：透过 bzip2 的支持进行压缩/解压缩：此时档名最好为 *.tar.bz2
+-z  ：透过 gzip  的支持进行压缩/解压缩：此时档名最好为 *.tar.gz
+-v  ：在压缩/解压缩的过程中，将正在处理的档名显示出来！
+-f filename：-f 后面要立刻接要被处理的档名！建议 -f 单独写一个选项罗！
+-C 目录    ：这个选项用在解压缩，若要在特定目录解压缩，可以使用这个选项。
+
+
+-p  ：保留备份数据的原本权限与属性，常用於备份(-c)重要的配置档
+-P  ：保留绝对路径，亦即允许备份数据中含有根目录存在之意；
+--exclude=FILE：在压缩的过程中，不要将 FILE 打包！ 
+......
+</code></pre><p>其实最简单的使用 tar 就只要记忆底下的方式即可</p>
+<ul>
+<li>压　缩：tar -jcv -f filename.tar.bz2 要被压缩的文件或目录名称</li>
+<li>查　询：tar -jtv -f filename.tar.bz2</li>
+<li>解压缩：tar -jxv -f filename.tar.bz2 -C 欲解压缩的目录</li>
+</ul>
+<p>那个 filename.tar.bz2 是我们自己取的档名，tar 并不会主动的产生创建的档名喔！ 所以扩展名就显的很重要了！如果不加 [-j|-z] 的话，档名最好取为 <em>.tar 即可。如果是 -j 选项，代表有 bzip2 的支持，因此档名最好就取为 </em>.tar.bz2 ，因为 bzip2 会产生 .bz2 的扩展名之故！ 至於如果是加上了 -z 的 gzip 的支持，那档名最好取为 *.tar.gz。</p>
+<p>另外，由於『 -f filename 』是紧接在一起的，过去很多文章常会写成『-jcvf filename』，这样是对的， 但由於选项的顺序理论上是可以变换的，所以很多读者会误认为『-jvfc filename』也可以～事实上这样会导致产生的档名变成 c ！ 因为 -fc 嘛！所以罗，建议在学习 tar 时，将『 -f filename 』与其他选项独立出来，会比较不容易发生问题。
+<br>
+<br>
+<br></p>
+<h1 id="-shell-shell-scripts">第三部分：学习 Shell 与 Shell scripts</h1>
+<h2 id="3-1-vi-vim">3.1 vi 与 vim</h2>
+<h3 id="3-1-1-vi-vim">3.1.1 为何要学 vi 与 vim</h3>
+<p>因为有太多 Linux 上面的指令都默认使用 vi 作为数据编辑的接口，所以你必须、一定要学会 vi ，否则很多指令你根本就无法操作。</p>
+<p>vim 是 vi 的进阶版本，vim 可以用颜色或底线等方式来显示一些特殊的信息。 举例来说，当你使用 vim 去编辑一个 C 程序语言的档案，或者是shell script 程序时，vim 会依据档案的扩展名或者是档案内的开头信息， 判断该档案的内容而自动的呼叫该程序的语法判断式，再以颜色来显示程序代码与一般信息。也就是说， 这个 vim 是个『程序编辑器』。</p>
+<p> vim 里面加入了很多额外的功能，例如支持正规表示法的搜寻架构、多档案编辑、区块复制等等。 这对于我们在 Linux 上面进行一些配置文件的修订工作时，是很棒的一项功能。</p>
+<h3 id="3-1-2-vi-">3.1.2 vi 的使用</h3>
+<p>基本上 vi 共分为三种模式，分别是『一般模式』、『编辑模式』与『指令列命令模式』。 这三种模式的作用分别是：</p>
+<ul>
+<li><p>一般模式：</p>
+<p>以 vi 打开一个档案就直接进入一般模式了。在这个模式中， 你可以使用『上下左右』按键来移动光标，你可以使用『删除字符』或『删除整行』来处理档案内容， 也可以使用『复制、贴上』来处理你的文件数据。</p>
+</li>
+<li><p>编辑模式：</p>
+<p>在一般模式中可以进行删除、复制、贴上等等的动作，但是却无法编辑文件内容的！ 要等到你按下『i, I, o, O, a, A, r, R』等任何一个字母之后才会进入编辑模式。通常在 Linux 中，按下这些按键时，在画面的左下方会出现『 INSERT 或 REPLACE 』的字样，此时才可以进行编辑。而如果要回到一般模式时， 则必须要按下『Esc』这个按键即可退出编辑模式。</p>
+</li>
+<li><p>指令列命令模式：</p>
+<p>在一般模式当中，输入『 : / ? 』三个中的任何一个按钮，就可以将光标移动到最底下那一行。在这个模式当中， 可以提供你『搜寻资料』的动作，而读取、存盘、大量取代字符、离开 vi 、显示行号等等的动作则是在此模式中达成的！</p>
+</li>
+</ul>
+<p>按键说明</p>
+<p>第一部份：一般模式可用的按钮说明，光标移动、复制贴上、搜寻取代等</p>
+<ul>
+<li><p>/word    :</p>
+<p>  向光标之下寻找一个名称为 word 的字符串。例如要在档案内搜寻 vbird 这个字符串，就输入 /vbird 即可！</p>
+</li>
+<li><p>?word:    向光标之上寻找一个字符串名称为 word 的字符串。</p>
+</li>
+<li><p>n:    代表『重复前一个搜寻的动作』。举例来说， 如果刚刚我们执行 /vbird 去向下搜寻 vbird 这个字符串，则按下 n 后，会向下继续搜寻下一个名称为 vbird 的字符串。</p>
+</li>
+<li><p>gg:    移动到这个档案的第一行</p>
+</li>
+<li><p>n\<Enter>:    n 为数字。光标向下移动 n 行</p>
+</li>
+<li><p>yy:    复制游标所在的那一行</p>
+</li>
+<li><p>nyy:    n 为数字。复制光标所在的向下 n 列，例如 20yy 则是复制 20 列</p>
+</li>
+<li><p>dd    删除游标所在的那一整列</p>
+</li>
+<li><p>ndd    n 为数字。删除光标所在的向下 n 列，例如 20dd 则是删除 20 列 </p>
+</li>
+<li><p>.    : 不要怀疑！这就是小数点！意思是重复前一个动作的意思。 如果你想要重复删除、重复贴上等等动作，按下小数点『.』就好了！ </p>
+</li>
+<li><p>u    复原前一个动作。</p>
+</li>
+<li><p>p, P    : p 为将已复制的数据在光标下一行贴上，P 则为贴在游标上一行！ 举例来说，我目前光标在第 20 行，且已经复制了 10 行数据。则按下 p 后， 那 10 行数据会贴在原本的 20 行之后，亦即由 21 行开始贴。但如果是按下 P 呢？ 那么原本的第 20 行会被推到变成 30 行。 (常用)</p>
+</li>
+</ul>
+<p>第三部份：指令列模式的可用的按钮说明</p>
+<ul>
+<li>:w    将编辑的数据写入硬盘档案中(常用)</li>
+<li>:q    离开 vi (常用)</li>
+<li>:q!    若曾修改过档案，又不想储存，使用 ! 为强制离开不储存档案。
+注意一下啊，那个惊叹号 (!) 在 vi 当中，常常具有『强制』的意思。</li>
+<li>:wq    储存后离开，若为 :wq! 则为强制储存后离开 </li>
+</ul>
+<h3 id="3-1-3-vim-">3.1.3 vim 的额外功能</h3>
+<ul>
+<li>区块选择(Visual Block)：你可以复制一个区块，并且是贴在某个『区块的范围』内，而不是以行为单位来处理你的整份文件。在进行排列整齐的文本文件中复制/删除区块时，会是一个非常棒的功能！</li>
+<li>多窗口功能：在指令列模式输入『:sp {filename}』即可！那个 filename 可有可无， 如果想要在新窗口启动另一个档案，就加入档名，否则仅输入 :sp 时， 出现的则是同一个档案在两个窗口间！你还可以利用『[ctrl]+w+↑』及『[ctrl]+w+↓』 在两个窗口之间移动。</li>
+</ul>
+<h3 id="3-1-4-vim-">3.1.4 其他 vim 使用注意事项</h3>
+<p>DOS 与 Linux 的断行字符</p>
+<p>我们可以利用 cat -A 来观察以 DOS (Windows 系统) 建立的档案的特殊格式， 可以发现在 DOS 使用的断行字符为 ^M$ ，我们称为 CR 与 LF 两个符号。 而在 Linux 底下，则是仅有 LF ($) 这个断行符号。</p>
+<p>在 Linux 底下的指令在开始执行时，他的判断依据是 『Enter』，而 Linux 的 Enter 为 LF 符号， 不过，由于 DOS 的断行符号是 CRLF ，也就是多了一个 ^M 的符号出来， 在这样的情况下，如果是一个 shell script 的程序档案，呵呵～将可能造成『程序无法执行』的状态～ 因为他会误判程序所下达的指令内容啊！这很伤脑筋吧！</p>
+<p>那怎么办啊？很简单啊，将格式转换成为 Linux 即可啊！『废话』，这当然大家都知道，但是， 要以 vi 进入该档案，然后一个一个删除每一行的 CR 吗？当然没有这么没人性啦！ 我们可以透过简单的指令来进行格式的转换啊！</p>
+<pre><code>[root@www ~]# dos2unix [-kn] file [newfile]
+[root@www ~]# unix2dos [-kn] file [newfile]
+
+-k  ：保留该档案原本的 mtime 时间格式 (不更新档案上次内容经过修订的时间)
+-n  ：保留原本的旧档，将转换后的内容输出到新档案，如： dos2unix -n old new
+</code></pre><p>2 = two = to</p>
+<h2 id="3-2-bash">3.2 认识与学习 BASH</h2>
+<h3 id="3-2-1-shell">3.2.1 什么是 Shell</h3>
+<p>输入一个命令之后， 硬件会透过你下达的命令来工作！那么硬件如何知道你下达的命令呢？那就是 kernel (核心) 的控制工作了！也就是说，我们必须要透过『 Shell 』将我们输入的命令与 Kernel 沟通，好让 Kernel 可以控制硬件来正确无误的工作。</p>
+<p>Linux 默认就是使用 bash这种shell</p>
+<h3 id="3-2-2-shell-">3.2.2 Shell 的变量功能</h3>
+<h4 id="3-2-2-1-echo-unset">3.2.2.1 变量的取用与配置：echo, 变量配置守则, unset</h4>
+<pre><code>[root@www ~]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+[root@www ~]# echo ${PATH}
+</code></pre><p>echo，需要在变量名称前面加上 $ ， 或者是以 ${变量} 的方式来取用。</p>
+<p>那么我要如何『配置』或者是『修改』 某个变量的内容啊？
+用『等号(=)』连接变量与他的内容</p>
+<pre><code>[root@www ~]# echo $myname
+       &lt;==这里并没有任何数据～因为这个变量尚未被配置！是空的！
+[root@www ~]# myname=VBird
+[root@www ~]# echo $myname
+VBird  &lt;==出现了！因为这个变量已经被配置了！
+</code></pre><h4 id="3-2-2-2-">3.2.2.2 变量的配置守则</h4>
+<ul>
+<li><p>等号两边不能直接接空格符，如下所示为错误：
+『myname = VBird』或『myname=VBird Tsai』</p>
+</li>
+<li><p>变量名称只能是英文字母与数字，但是开头字符不能是数字，如下为错误：
+『2myname=VBird』</p>
+</li>
+<li><p>变量内容若有空格符可使用双引号『&quot;』或单引号『&#39;』将变量内容结合起来，但
+双引号内的特殊字符如 $ 等，可以保有原本的特性，如下所示：
+『var=&quot;lang is $LANG&quot;』则『echo $var』可得『lang is en_US』
+单引号内的特殊字符则仅为一般字符 (纯文本)，如下所示：
+『var=&#39;lang is $LANG&#39;』则『echo $var』可得『lang is $LANG』</p>
+</li>
+<li><p>可用跳脱字符『 \ 』将特殊符号(如 [Enter], $, \, 空格符, &#39;等)变成一般字符；</p>
+</li>
+<li><p>在一串命令中，还需要藉由其他的命令提供的信息，可以使用反单引号『`命令`』或 『\$(命令)』。特别注意，那个 ` 是键盘上方的数字键 1 左边那个按键，而不是单引号！ 例如想要取得核心版本的配置：
+『version=$(uname -r)』再『echo $version』可得『2.6.18-128.el5』</p>
+</li>
+<li><p>若该变量为扩增变量内容时，则可用 &quot;\$变量名称&quot; 或\${变量} 累加内容，如下所示：
+『PATH=&quot;$PATH&quot;:/home/bin』</p>
+</li>
+<li><p>若该变量需要在其他子程序运行，则需要以 export 来使变量变成环境变量：
+『export PATH』</p>
+</li>
+<li><p>取消变量的方法为使用 unset ：『unset 变量名称』例如取消 myname 的配置：
+『unset myname』</p>
+</li>
+</ul>
+<p>单引号与双引号的最大不同在于双引号仍然可以保有变量的内容，但单引号内仅能是一般字符 ，而不会有特殊符号。</p>
+<p>在命令下达的过程中，反单引号( ` )这个符号代表的意义为何？</p>
+<p>答：</p>
+<p>在一串命令中，在 ` 之内的命令将会被先运行，而其运行出来的结果将做为外部的输入信息！</p>
+<p>举个例子，locate 命令可以列出所有的相关文件档名，但是，如果我想要知道各个文件的权限呢？举例来说，我想要知道每个 crontab 相关档名的权限：</p>
+<pre><code>[root@www ~]# ls -l `locate crontab`
+</code></pre><p>如此一来，先以 locate 将文件名数据都列出来，再以 ls 命令来处理。</p>
+<p>例题：</p>
+<p>若你有一个常去的工作目录名称为：『/cluster/server/work/taiwan_2005/003/』，如何进行该目录的简化？</p>
+<p>答：</p>
+<pre><code>[root@www ~]# work=&quot;/cluster/server/work/taiwan_2005/003/&quot;
+[root@www ~]# cd $work
+</code></pre><h4 id="3-2-2-3-">3.2.2.3 环境变量</h4>
+<p>目前我的 shell 环境中， 有多少默认的环境变量啊？我们可以利用两个命令来查阅，分别是 env 与 export。</p>
+<pre><code>范例一：列出目前的 shell 环境下的所有环境变量与其内容。
+[root@www ~]# env
+HOSTNAME=www.vbird.tsai    &lt;== 这部主机的主机名
+TERM=xterm    
+...
+</code></pre><p>env 是 environment (环境) 的简写，上面的例子当中，是列出来所有的环境变量。当然，如果使用 export 也会是一样的内容,但是export 还有其他额外的功能。</p>
+<p>RANDOM环境变量</p>
+<p>目前大多数的 distributions 都会有随机数生成器，那就是 /dev/random 这个文件。 我们可以通过这个随机数文件相关的变量 ($RANDOM) 来随机取得随机数值喔。在 BASH 的环境下，这个 RANDOM 变量的内容，介于 0~32767 之间，所以，你只要 echo $RANDOM 时，系统就会主动的随机取出一个介于 0~32767 的数值。万一我想要使用 0~9 之间的数值呢？呵呵～利用 declare 宣告数值类型， 然后这样做就可以了：</p>
+<pre><code>[root@www ~]# declare -i number=$RANDOM*10/32768 ; echo $number
+8   &lt;== 此时会随机取出 0~9 之间的数值喔！
+</code></pre><p>用 set 观察所有变量 (含环境变量与自定义变量)</p>
+<p> set 除了环境变量之外， 还会将其他在 bash 内的变量通通显示出来。</p>
+<p> 基本上，在 Linux 默认的情况中，使用{大写的字母}来配置的变量一般为系统内定需要的变量</p>
+<h2 id="3-3-">3.3 命令别名与历史命令</h2>
+<p>命令别名：</p>
+<p>举个例子，如果你要查询隐藏档，并且需要长的列出与一页一页翻看，那么需要下达『 ls -al | more 』这个命令，怎么使用 lm 来简化呢？</p>
+<pre><code>[root@www ~]# alias lm=&#39;ls -al | more&#39;
+</code></pre><p>至于如果要取消命令别名的话，那么就使用 unalias。例如要将刚刚的 lm 命令别名拿掉。</p>
+<pre><code>[root@www ~]# unalias lm
+</code></pre><p>那么命令别名与变量有什么不同呢？</p>
+<p>命令别名是『新创一个新的命令， 你可以直接下达该命令』的，至于变量则需要使用类似『 echo 』命令才能够呼叫出变量的内容！ 这两者当然不一样！</p>
+<p>历史命令：history</p>
+<p>如何查询我们曾经下达过的命令呢？就使用 history。</p>
+<pre><code>
+[root@www ~]# history [n]
+[root@www ~]# history [-c]
+[root@www ~]# history [-raw] histfiles
+选项与参数：
+n   ：数字，意思是『要列出最近的 n 笔命令行表』的意思！
+-c  ：将目前的 shell 中的所有 history 内容全部消除
+
+
+[root@www ~]# !number
+[root@www ~]# !command
+[root@www ~]# !!
+选项与参数：
+number  ：运行第几笔命令的意思；
+command ：由最近的命令向前搜寻『命令串开头为 command』的那个命令，并运行；
+!!      ：就是运行上一个命令(相当于按↑按键后，按 Enter)
+
+[root@www ~]# history
+   66  man rm
+   67  alias
+   68  man history
+   69  history 
+[root@www ~]# !66  &lt;==运行第 66 笔命令
+[root@www ~]# !!   &lt;==运行上一个命令，本例中亦即 !66 
+[root@www ~]# !al  &lt;==运行最近以 al 为开头的命令(上头列出的第 67 个)
+</code></pre><h2 id="3-4-bash-shell-">3.4 Bash shell 的操作环境</h2>
+<p>source ：读入环境配置文件的命令</p>
+<p> 如果你将自己的偏好配置写入上述的文件后，通常都是得注销再登陆后，该配置才会生效。否则就得要利用 source 这个命令。</p>
+<pre><code>[root@www ~]# source 配置文件档名
+
+范例：将家目录的 ~/.bashrc 的配置读入目前的 bash 环境中
+[root@www ~]# source ~/.bashrc  &lt;==底下这两个命令是一样的！
+[root@www ~]#  .  ~/.bashrc
+</code></pre><p>利用 source 或小数点 (.) 都可以将配置文件的内容读进来目前的 shell 环境中。</p>
+<p>有没有可能会使用到不同环境配置文件的时候？有啊！ 最常发生在一个人的工作环境分为多种情况的时候了！举个例子来说，在鸟哥的大型主机中， 常常需要负责两到三个不同的案子，每个案子所需要处理的环境变量订定并不相同， 那么鸟哥就将这两三个案子分别编写属于该案子的环境变量配置文件案，当需要该环境时，就直接『 source 变量文件 』，如此一来，环境变量的配置就变的更简便而灵活了！</p>
+<h2 id="3-5-redirection-">3.5 数据流重导向 (Redirection)</h2>
+<h3 id="3-5-1-">3.5.1 数据流重导向</h3>
+<p>数据流重导向就是将某个命令运行后应该要出现在屏幕上的数据， 给他传输到其他的地方，例如文件或者是装置 (例如打印机之类的)。</p>
+<p>standard output 与 standard error output</p>
+<p>标准输出指的是『命令运行所回传的正确的信息』，而标准错误输出可理解为『 命令运行失败后，所回传的错误信息』。</p>
+<p>数据流重导向可以将 standard output (简称 stdout) 与 standard error output (简称 stderr) 分别传送到其他的文件或装置去，而分别传送所用的特殊字符则如下所示：</p>
+<ol>
+<li>标准输入　　(stdin) ：代码为 0 ，使用 &lt; 或 &lt;&lt; ；</li>
+<li>标准输出　　(stdout)：代码为 1 ，使用 &gt; 或 &gt;&gt; ；</li>
+<li>标准错误输出(stderr)：代码为 2 ，使用 2&gt; 或 2&gt;&gt; ；</li>
+</ol>
+<pre><code>范例一：观察你的系统根目录 (/) 下各目录的文件名、权限与属性，并记录下来
+[root@www ~]# ll /  &lt;==此时屏幕会显示出文件名信息
+
+[root@www ~]# ll / &gt; ~/rootfile &lt;==屏幕并无任何信息
+[root@www ~]# ll  ~/rootfile &lt;==有个新档被创建了！
+-rw-r--r-- 1 root root 1089 Feb  6 17:00 /root/rootfile
+</code></pre><ol>
+<li>该文件 (本例中是 ~/rootfile) 若不存在，系统会自动的将他创建起来，但是</li>
+<li>当这个文件存在的时候，那么系统就会先将这个文件内容清空，然后再将数据写入！</li>
+<li>也就是若以 &gt; 输出到一个已存在的文件中，那个文件就会被覆盖。</li>
+</ol>
+<p>那如果我想要将数据累加而不想要将旧的数据删除，那该如何是好？利用两个大于的符号 (&gt;&gt;) 就好啦！以上面的范例来说，你应该要改成『 ll / &gt;&gt; ~/rootfile 』即可。 如此一来，当 (1) ~/rootfile 不存在时系统会主动创建这个文件；(2)若该文件已存在， 则数据会在该文件的最下方累加进去！</p>
+<ul>
+<li>1&gt; ：以覆盖的方法将『正确的数据』输出到指定的文件或装置上；</li>
+<li>1&gt;&gt;：以累加的方法将『正确的数据』输出到指定的文件或装置上；</li>
+<li>2&gt; ：以覆盖的方法将『错误的数据』输出到指定的文件或装置上；</li>
+<li>2&gt;&gt;：以累加的方法将『错误的数据』输出到指定的文件或装置上；</li>
+</ul>
+<p>如果我要将正确与错误数据通通写入同一个文件去呢？这个时候就得要使用特殊的写法了！ 我们同样用底下的案例来说明：</p>
+<pre><code>范例五：将命令的数据全部写入名为 list 的文件中
+[dmtsai@www ~]$ find /home -name .bashrc &gt; list 2&gt; list  &lt;==错误
+[dmtsai@www ~]$ find /home -name .bashrc &gt; list 2&gt;&amp;1     &lt;==正确
+[dmtsai@www ~]$ find /home -name .bashrc &amp;&gt; list         &lt;==正确
+</code></pre><h3 id="3-5-2-dev-null-">3.5.2 /dev/null 垃圾桶黑洞装置与特殊写法</h3>
+<p>这个 /dev/null 可以吃掉任何导向这个装置的信息。</p>
+<h3 id="3-5-3-standard-input-">3.5.3 standard input ： &lt; 与 &lt;&lt;</h3>
+<p>『将原本需要由键盘输入的数据，改由文件内容来取代』。 我们先由底下的 cat 命令操作来了解一下什么叫做『键盘输入』吧！</p>
+<pre><code>范例六：利用 cat 命令来创建一个文件的简单流程
+[root@www ~]# cat &gt; catfile
+testing
+cat file test
+&lt;==这里按下 [ctrl]+d 来离开
+
+[root@www ~]# cat catfile
+testing
+cat file test
+</code></pre><p>加入 &gt; 在 cat 后，那个 catfile 会被主动的创建，而内容就是刚刚键盘上面输入的那两行数据了。 那能不能用某个文件的内容来取代键盘的敲击呢？ 可以的！如下所示：</p>
+<pre><code>范例七：用 stdin 取代键盘的输入以创建新文件的简单流程
+[root@www ~]# cat &gt; catfile &lt; ~/.bashrc
+[root@www ~]# ll catfile ~/.bashrc
+-rw-r--r-- 1 root root 194 Sep 26 13:36 /root/.bashrc
+-rw-r--r-- 1 root root 194 Feb  6 18:29 catfile
+# 注意看，这两个文件的大小会一模一样！几乎像是使用 cp 来复制一般！
+</code></pre><p>理解 &lt; 之后，再来是 &lt;&lt; 这个连续两个小于的符号。 他代表的是『结束的输入字符』的意思！举例来讲：『我要用 cat 直接将输入的信息输出到 catfile 中， 且当由键盘输入 eof 时，该次输入就结束』，那我可以这样做：</p>
+<pre><code>[root@www ~]# cat &gt; catfile &lt;&lt; &quot;eof&quot;
+&gt; This is a test.
+&gt; OK now stop
+&gt; eof  &lt;==输入这关键词，立刻就结束而不需要输入 [ctrl]+d
+
+[root@www ~]# cat catfile
+This is a test.
+OK now stop   
+</code></pre><p>利用 &lt;&lt; 右侧的控制字符，我们可以终止一次输入， 而不必输入 [crtl]+d 来结束</p>
+<h3 id="3-5-4-">3.5.4 命令运行的判断依据： ; , &amp;&amp;, ||</h3>
+<p>cmd ; cmd (不考虑命令相关性的连续命令下达)</p>
+<p>在某些时候，我们希望可以一次运行多个命令，例如在关机的时候我希望可以先运行两次 sync 同步化写入磁盘后才 shutdown 计算机，可以这样做：</p>
+<pre><code>[root@www ~]# sync; sync; shutdown -h now
+</code></pre><p>在命令与命令中间利用分号 (;) 来隔开，这样一来，分号前的命令运行完后就会立刻接着运行后面的命令了。</p>
+<p>$? (命令回传值) 与 &amp;&amp; 或 ||</p>
+<p>如两个命令之间有相依性，而这个相依性主要判断的地方就在于前一个命令运行的结果是否正确。『若前一个命令运行的结果为正确，在 Linux 底下会回传一个 $? = 0 的值』。 </p>
+<p>与或执行为短路：</p>
+<ul>
+<li>与：一个为错后面全不执行</li>
+<li>或：一个为对后面全不执行</li>
+</ul>
+<p>例题：</p>
+<p>以 ls 测试 /tmp/vbirding 是否存在，若存在则显示 &quot;exist&quot; ，若不存在，则显示 &quot;not exist&quot;！</p>
+<p>答：</p>
+<p>这又牵涉到逻辑判断的问题，如果存在就显示某个数据，若不存在就显示其他数据，那我可以这样做：</p>
+<pre><code>ls /tmp/vbirding &amp;&amp; echo &quot;exist&quot; || echo &quot;not exist&quot;
+</code></pre><p>意思是说，当 ls /tmp/vbirding 运行后，若正确，就运行 echo &quot;exist&quot; ，若有问题，就运行 echo &quot;not exist&quot; ！那如果写成如下的状况会出现什么？</p>
+<p>一般来说，假设判断式有三个，也就是：</p>
+<p>command1 &amp;&amp; command2 || command3</p>
+<p>而且顺序通常不会变，因为一般来说， command2 与 command3 会放置肯定可以运行成功的命令。</p>
+<pre><code>test -f /usr &amp;&amp; echo &quot;exist&quot; || echo &quot;Not exist&quot; &amp;&amp; echo &quot;test&quot;
+Not exist
+test
+</code></pre><p>测试/usr是否存在</p>
+<p>可以看出对于|| 前一个返回1后不会执行，把结果传给下一个,
+对于&amp;&amp;前一个返回0不会执行，把结果传给下一个</p>
+<h2 id="3-6-pipe-">3.6 管线命令 (pipe)</h2>
+<p>管线命令使用的是『 | 』这个界定符号！ 另外，管线命令与『连续下达命令』是不一样的。</p>
+<p>管线命令『 | 』仅能处理经由前面一个命令传来的正确信息，也就是 standard output 的信息，对于 stdandard error 并没有直接处理的能力。</p>
+<p>在每个管线后面接的第一个数据必定是『命令』！而且这个命令必须要能够接受 standard input 的数据才行，这样的命令才可以是为『管线命令』，例如 less, more, head, tail 等都是可以接受 standard input 的管线命令啦。至于例如 ls, cp, mv 等就不是管线命令了！因为 ls, cp, mv 并不会接受来自 stdin 的数据。 </p>
+<h3 id="3-6-1-cut-grep">3.6.1 撷取命令： cut, grep</h3>
+<p>1.cut</p>
+<p>cut 主要的用途在于将『同一行里面的数据进行分解！』最常使用在分析一些数据或文字数据的时候！ 这是因为有时候我们会以某些字符当作分割的参数，然后来将数据加以切割，以取得我们所需要的数据。</p>
+<pre><code>
+[root@www ~]# cut -d&#39;分隔字符&#39; -f fields &lt;==用于有特定分隔字符
+[root@www ~]# cut -c 字符区间            &lt;==用于排列整齐的信息
+选项与参数：
+-d  ：后面接分隔字符。与 -f 一起使用；
+-f  ：依据 -d 的分隔字符将一段信息分割成为数段，用 -f 取出第几段的意思；
+-c  ：以字符 (characters) 的单位取出固定字符区间；
+
+范例一：将 PATH 变量取出，我要找出第五个路径。
+[root@www ~]# echo $PATH
+/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/usr/games:
+# 1 |    2   |  3  |    4    |       5      |     6        |    7
+
+[root@www ~]# echo $PATH | cut -d &#39;:&#39; -f 5
+# 如同上面的数字显示，我们是以『 : 』作为分隔，因此会出现 /usr/local/bin 
+# 那么如果想要列出第 3 与第 5 呢？，就是这样：
+[root@www ~]# echo $PATH | cut -d &#39;:&#39; -f 3,5
+</code></pre><p>2.grep</p>
+<p> grep 是分析一行信息， 若当中有我们所需要的信息，就将该行拿出来。</p>
+<pre><code> [root@www ~]# grep [-acinv] [--color=auto] &#39;搜寻字符串&#39; filename
+选项与参数：
+-c ：计算找到 &#39;搜寻字符串&#39; 的次数
+-i ：忽略大小写的不同，所以大小写视为相同
+-n ：顺便输出行号
+-v ：反向选择，亦即显示出没有 &#39;搜寻字符串&#39; 内容的那一行！
+
+范例一：将 last 当中，有出现 root 的那一行就取出来；
+[root@www ~]# last | grep &#39;root&#39;
+
+范例二：与范例一相反，只要没有 root 的就取出！
+[root@www ~]# last | grep -v &#39;root&#39;
+
+范例三：在 last 的输出信息中，只要有 root 就取出，并且仅取第一栏
+[root@www ~]# last | grep &#39;root&#39; |cut -d &#39; &#39; -f1
+</code></pre><p>关于减号 - 的用途</p>
+<p>在管线命令当中，常常会使用到前一个命令的 stdout 作为这次的 stdin ， 某些命令需要用到文件名 (例如 tar) 来进行处理时，该 stdin 与 stdout 可以利用减号 &quot;-&quot; 来替代， 举例来说：</p>
+<pre><code>[root@www ~]# tar -cvf - /home | tar -xvf -
+</code></pre><p>上面这个例子是说：『我将 /home 里面的文件给他打包，但打包的数据不是纪录到文件，而是传送到 stdout； 经过管线后，将 tar -cvf - /home 传送给后面的 tar -xvf - 』。后面的这个 - 则是取用前一个命令的 stdout。</p>
+<h3 id="3-6-2-sort-wc-uniq">3.6.2 排序命令： sort, wc, uniq</h3>
+<ol>
+<li>sort</li>
+</ol>
+<pre><code>[root@www ~]# sort [-fbMnrtuk] [file or stdin]
+选项与参数：
+-f  ：忽略大小写的差异，例如 A 与 a 视为编码相同；
+-b  ：忽略最前面的空格符部分；
+-M  ：以月份的名字来排序，例如 JAN, DEC 等等的排序方法；
+-n  ：使用『纯数字』进行排序(默认是以文字型态来排序的)；
+-r  ：反向排序；
+-u  ：就是 uniq ，相同的数据中，仅出现一行代表；
+-t  ：分隔符，默认是用 [tab] 键来分隔；
+-k  ：以那个区间 (field) 来进行排序的意思
+
+范例一：个人账号都记录在 /etc/passwd 下，请将账号进行排序。
+[root@www ~]# cat /etc/passwd | sort
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+apache:x:48:48:Apache:/var/www:/sbin/nologin
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+</code></pre><ol start="2">
+<li>uniq</li>
+</ol>
+<p>如果我排序完成了，想要将重复的数据仅列出一个显示，可以怎么做呢？</p>
+<pre><code>[root@www ~]# uniq [-ic]
+选项与参数：
+-i  ：忽略大小写字符的不同；
+-c  ：进行计数
+
+范例一：使用 last 将账号列出，仅取出账号栏，进行排序后仅取出一位；
+[root@www ~]# last | cut -d &#39; &#39; -f1 | sort | uniq
+
+范例二：承上题，如果我还想要知道每个人的登陆总次数呢？
+[root@www ~]# last | cut -d &#39; &#39; -f1 | sort | uniq -c
+      1
+     12 reboot
+     41 root
+      1 wtmp
+# 从上面的结果可以发现 reboot 有 12 次， root 登陆则有 41 次！
+# wtmp 与第一行的空白都是 last 的默认字符，那两个可以忽略的！
+</code></pre><p>单独执行 last 指令，它会读取位于 /var/log/目录下，名称为 wtmp 的文件，并把该文件记录登录的用户名，全部显示出来。</p>
+<ol start="3">
+<li>wc
+如果我想要知道 /etc/man.config 这个文件里面有多少字？多少行？多少字符的话， 可以怎么做呢？其实可以利用 wc 这个命令来达成喔！他可以帮我们计算输出的信息的整体数据！</li>
+</ol>
+<pre><code>[root@www ~]# wc [-lwm]
+选项与参数：
+-l  ：仅列出行；
+-w  ：仅列出多少字(英文单字)；
+-m  ：多少字符；
+
+范例一：那个 /etc/man.config 里面到底有多少相关字、行、字符数？
+[root@www ~]# cat /etc/man.config | wc 
+    141     722    4617
+#输出的三个数字中，分别代表： 『行、字数、字符数』
+</code></pre><h3 id="3-6-3-">3.6.3 其他</h3>
+<p>双向重导向： tee
+字符转换命令： tr, col, join, paste, expand
+分割命令： split
+参数代换： xargs</p>
+<h2 id="3-7-">3.7 基础正规表示法</h2>
+<h3 id="3-7-1-">3.7.1 语系对正规表示法的影响</h3>
+<p>。由於不同语系的编码数据并不相同，所以就会造成数据撷取结果的差异了。 举例来说，在英文大小写的编码顺序中，zh_TW.big5 及 C 这两种语系的输出结果分别如下：</p>
+<pre><code>LANG=C     时：0 1 2 3 4 ... A B C D ... Z a b c d ...z
+LANG=zh_TW 时：0 1 2 3 4 ... a A b B c C d D ... z Z
+</code></pre><p>上面的顺序是编码的顺序，如果你想要撷取大写字节而使用 [A-Z] 时， 会发现 LANG=C 确实可以仅捉到大写字节 ，但是如果 LANG=zh_TW.big5 时，就会发现到， 连同小写的 b-z 也会被撷取出来。 所以，使用正规表示法时，需要特别留意当时环境的语系为何。</p>
+<h3 id="3-7-2-">3.7.2 基础正规表示法练习</h3>
+<h4 id="3-7-2-1-">3.7.2.1、利用中括号 [] 来搜寻集合字节</h4>
+<p>如果我想要搜寻 test 或 taste 这两个单字时，可以发现到，其实她们有共通的 &#39;t?st&#39; 存在～这个时候，我可以这样来搜寻：</p>
+<pre><code>[root@www ~]# grep -n &#39;t[ae]st&#39; regular_express.txt
+8:I can&#39;t finish the test.
+9:Oh! The soup taste good.
+</code></pre><p><strong>其实 [] 里面不论有几个字节，他都谨代表某『一个』字节</strong>， 而如果想要搜寻到有 oo 的字节时，则使用：</p>
+<pre><code>[root@www ~]# grep -n &#39;oo&#39; regular_express.txt
+</code></pre><p>但是，如果我不想要 oo 前面有 g 的话呢？此时，可以利用在集合字节的反向选择 [^] 来达成：</p>
+<pre><code>[root@www ~]# grep -n &#39;[^g]oo&#39; regular_express.txt
+2:apple is my favorite food.
+3:Football game is not use feet only.
+18:google is the best tools for search keyword.
+19:goooooogle yes!
+</code></pre><p>但是第 18 行明明有 google 的 goo 啊～别忘记了，因为该行后面出现了 tool 的 too 啊！所以该行也被列出来～ 也就是说， 18 行里面虽然出现了我们所不要的项目 (goo) 但是由於有需要的项目 (too) ， 因此，是符合字串搜寻的喔！</p>
+<p>至於第 19 行，同样的，因为 goooooogle 里面的 oo 前面可能是 o ，例如： go(ooo)oogle ，所以，这一行也是符合需求的！</p>
+<p>再来，假设我 oo 前面不想要有小写字节</p>
+<pre><code>[root@www ~]# grep -n &#39;[^a-z]oo&#39; regular_express.txt
+</code></pre><p>也就是说，当我们在一组集合字节中，如果该字节组是连续的，例如大写英文/小写英文/数字等等， 就可以使用[a-z],[A-Z],[0-9]等方式来书写，那么如果我们的要求字串是数字与英文呢？ 就将他全部写在一起，变成：[a-zA-Z0-9]。</p>
+<p>但由於考虑到语系对於编码顺序的影响，因此除了连续编码使用减号『 - 』之外， 你也可以使用如下的方法来取得前面两个测试的结果：</p>
+<pre><code>[root@www ~]# grep -n &#39;[^[:lower:]]oo&#39; regular_express.txt
+#那个 [:lower:] 代表的就是 a-z 的意思！请参考前两小节的说明表格
+
+[root@www ~]# grep -n &#39;[
+	[:digit:]
+	]&#39; regular_express.txt
+</code></pre><p>这样的特殊符号很多，详情查阅鸟哥Linux私房菜</p>
+<h4 id="3-7-2-2-">3.7.2.2 行首与行尾字节 ^ $</h4>
+<p>如果我想要让 the 只在行首列出呢？ 我们可以这样做：</p>
+<pre><code>[root@www ~]# grep -n &#39;^the&#39; regular_express.txt
+12:the symbol &#39;*&#39; is represented as start.
+</code></pre><p> 如果我想要开头是小写字节的那一行就列出呢？可以这样：</p>
+<pre><code>[root@www ~]# grep -n &#39;^[a-z]&#39; regular_express.txt
+
+[root@www ~]# grep -n &#39;^[
+	[:lower:]
+	]&#39; regular_express.txt
+</code></pre><p> ^ 符号在 [] 内代表『反向选择』，在 [] 之外则代表定位在行首。</p>
+<p> 那如果我想要找出来，行尾结束为小数点 (.) 的那一行，该如何处理：</p>
+<pre><code>[root@www ~]# grep -n &#39;\.$&#39; regular_express.txt
+1:&quot;Open Source&quot; is a good mechanism to develop programs.
+</code></pre><p>因为小数点具有其他意义(底下会介绍)，所以必须要使用跳脱字节()来加以解除其特殊意义。</p>
+<p>我们在第十章内谈到过断行字节在 Linux 与 Windows 上的差异， Windows 的断行字节 (^M\$)，Linux的 ($) 。所以对于不同格式文档要分清结尾是什么。</p>
+<p>那么如果我想要找出来，哪一行是『空白行』，也就是说，该行并没有输入任何数据，该如何搜寻？</p>
+<pre><code>[root@www ~]# grep -n &#39;^$&#39; regular_express.txt
+</code></pre><p>假设你已经知道在一个程序脚本 (shell script) 中，空白行与开头为 # 的那一行是注解，如果将这些数据省略掉你可以怎么作呢？</p>
+<pre><code>[root@www ~]# cat -n /etc/syslog.conf
+#在 CentOS 中，结果可以发现有 33 行的输出，很多空白行与 # 开头
+
+[root@www ~]# grep -v &#39;^$&#39; /etc/syslog.conf | grep -v &#39;^#&#39;
+#结果仅有 10 行，其中第一个『 -v &#39;^$&#39; 』代表『不要空白行』，
+#第二个『 -v &#39;^#&#39; 』代表『不要开头是 # 的那行』喔！
+</code></pre><h4 id="3-7-2-3-">3.7.2.3 任意一个字节 . 与重复字节 *</h4>
+<p>在第十一章 bash 当中，我们知道万用字节 * 可以用来代表任意(0或多个)字节， 但是正规表示法并不是万用字节，两者之间是不相同的！ 至於正规表示法当中的『 . 』则代表『绝对有一个任意字节』的意思！这两个符号在正规表示法的意义如下：</p>
+<ul>
+<li>. (小数点)：代表『一定有一个任意字节』的意思；</li>
+<li>*(星星号)：代表『重复前一个字节， 0 到无穷多次』的意思，为组合形态</li>
+</ul>
+<p>假设我需要找出 g??d 的字串，亦即共有四个字节， 起头是 g 而结束是 d</p>
+<pre><code>[root@www ~]# grep -n &#39;g..d&#39; regular_express.txt
+</code></pre><p>因为 <em> 代表的是『重复 0 个或多个前面的 RE 字符』的意义， 因此，『o</em>』代表的是：『拥有空字节或一个 o 以上的字节』， <strong>特别注意，因为允许空字节(就是有没有字节都可以的意思)</strong>，因此，『 grep -n &#39;o*&#39; regular_express.txt 』将会把所有的数据都列印出来萤幕上！</p>
+<p>那如果是『oo*』呢？则第一个 o 肯定必须要存在，第二个 o 则是可有可无的多个 o ， 所以，凡是含有 o, oo, ooo, oooo 等等，都可以被列出来～</p>
+<p>同理，当我们需要『至少两个 o 以上的字串』时，就需要 ooo* 。</p>
+<p>如果我想要找出 g 开头与 g 结尾的字串，当中的字节可有可无，那该如何是好？是『g*g』吗？</p>
+<pre><code>[root@www ~]#grep -n &#39;g*g&#39; regular_express.txt
+1:&quot;Open Source&quot; is a good mechanism to develop programs.
+3:Football game is not use feet only.
+9:Oh! The soup taste good.
+</code></pre><p>但测试的结果竟然出现这么多行？太诡异了吧？其实一点也不诡异，因为 g*g 里面的 g* 代表『空字节或一个以上的 g』 在加上后面的 g ，因此，只要该行当中拥有一个以上的 g 就符合所需了！</p>
+<p>那该如何得到我们的 g....g 的需求呢？呵呵！就利用任意一个字节『.』啊！ 亦即是：『g.*g』。</p>
+<p>如果我想要找出有『任意数字』的行列呢？因为仅有数字，所以就成为：</p>
+<pre><code>[root@www ~]# grep -n &#39;[0-9][0-9]*&#39; regular_express.txt
+5:However, this dress is about $ 3183 dollars.
+</code></pre><p>虽然使用 grep -n &#39;[0-9]&#39; regular_express.txt 也可以得到相同的结果， 但鸟哥希望大家能够理解上面命令当中 RE 表示法的意义才好！</p>
+<h4 id="3-7-2-4-re-">3.7.2.4 限定连续 RE 字符范围 {}</h4>
+<p>果我想要限制一个范围区间内的重复字节数呢？这时候就得要使用到限定范围的字符 {} 了。 但因为 { 与 } 的符号在 shell 是有特殊意义的，因此， 我们必须要使用跳脱字符 \ 来让他失去特殊意义才行。 至於 {} 的语法是这样的，假设我要找到两个 o 的字串，可以是：</p>
+<pre><code>[root@www ~]# grep -n &#39;o\{2\}&#39; regular_express.txt
+18:google is the best tools for search keyword.
+19:goooooogle yes!
+</code></pre><p>这样看似乎与 ooo* 的字符没有什么差异啊？因为第 19 行有多个 o 依旧也出现了！ 好，那么换个搜寻的字串，假设我们要找出 g 后面接 2 到 5 个 o ，然后再接一个 g 的字串，他会是这样：</p>
+<pre><code>[root@www ~]# grep -n &#39;go\{2,5\}g&#39; regular_express.txt
+18:google is the best tools for search keyword.
+</code></pre><p>如果我想要的是 2 个 o 以上的 goooo....g 呢？除了可以是 gooo*g ，也可以是：</p>
+<pre><code>[root@www ~]# grep -n &#39;go\{2,\}g&#39; regular_express.txt
+18:google is the best tools for search keyword.
+19:goooooogle yes!
+</code></pre><h4 id="3-7-2-5-sed-">3.7.2.5 sed 工具： 行的新增/删除, 行的取代/显示, 搜寻并取代, 直接改档</h4>
+<p>.....</p>
+<h3 id="3-7-3-">3.7.3 延伸正规表示法</h3>
+<p>...</p>
+<h2 id="3-8-shell-scripts">3.8 学习 shell scripts</h2>
+<h3 id="3-8-1-shell-scripts">3.8.1 什么是 Shell scripts</h3>
+<p> shell script 是利用 shell 的功能所写的一个『程序 (program)』，这个程序是使用纯文字档，将一些 shell 的语法与命令(含外部命令)写在里面， 搭配正规表示法、管线命令与数据流重导向等功能，以达到我们所想要的处理目的。</p>
+<p>简单的说， shell script 就像是早期 DOS 年代的批量档 (.bat) ，最简单的功能就是将许多命令汇整写在一起，运行一个文件 &quot;shell script&quot; ，就能够一次运行多个命令。 而且 shell script 更提供阵列、回圈、条件与逻辑判断等重要功能。</p>
+<p>在 shell script 的撰写中还需要用到底下的注意事项：</p>
+<ul>
+<li>命令的运行是从上而下、从左而右的分析与运行；</li>
+<li>命令、选项与参数间的多个空白都会被忽略掉；</li>
+<li>空白行也将被忽略掉，并且 [tab] 按键所推开的空白同样视为空白键；</li>
+<li>如果读取到一个 Enter 符号 (CR) ，就尝试开始运行该行 (或该串) 命令；
+至於如果一行的内容太多，则可以使用『 [Enter] 』来延伸至下一行；</li>
+<li>『 # 』可做为注解！任何加在 # 后面的数据将全部被视为注解文字而被忽略！</li>
+<li><p>假设你写的这个程序档名是 /home/dmtsai/shell.sh ，那如何运行这个文件？有底下几个方法：</p>
+</li>
+<li><p>直接命令下达： shell.sh 文件必须要具备可读与可运行 (rx) 的权限，然后：</p>
+</li>
+<li>绝对路径：使用 /home/dmtsai/shell.sh 来下达命令；</li>
+<li>相对路径：假设工作目录在 /home/dmtsai/ ，则使用 ./shell.sh 来运行</li>
+<li>变量『PATH』功能：将 shell.sh 放在 PATH 指定的目录内，例如： ~/bin/</li>
+<li>以 bash 程序来运行：透过『 bash shell.sh 』或『 sh shell.sh 』来运行</li>
+</ul>
+<p>撰写第一支 script</p>
+<p>『 Hello World！』 </p>
+<pre><code>
+[root@www ~]# mkdir scripts; cd scripts
+[root@www scripts]# vi sh01.sh
+#!/bin/bash
+#Program:
+#This program shows &quot;Hello World!&quot; in your screen.
+#History:
+#2005/08/23    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+echo -e &quot;Hello World! \a \n&quot;
+exit 0
+</code></pre><ol>
+<li><p>第一行 #!/bin/bash 在宣告这个 script 使用的 shell 名称：</p>
+<p>因为我们使用的是 bash ，所以必须要以『 #!/bin/bash 』来宣告这个文件内的语法使用 bash 的语法,如果没有配置好这一行， 那么该程序可能会无法运行，因为系统无法判断该程序需要使用什么 shell 来运行。</p>
+</li>
+<li><p>程序内容的说明：</p>
+<p>整个 script 当中，除了第一行的『 #! 』是用来宣告 shell 的之外，其他的 # 都是『注解』用途！一般来说， 建议你一定要养成说明该 script 的：1. 内容与功能； 2. 版本资讯； 3. 作者与联络方式； 4. 建档日期；5. 历史纪录 等等。这将有助於未来程序的改写与 debug 呢！</p>
+</li>
+<li><p>主要环境变量的宣告：</p>
+<p>建议要将一些重要的环境变量配置好，鸟哥个人认为， PATH 与 LANG 是当中最重要的！ 如此一来，则可让我们这支程序在进行时，可以直接下达一些外部命令，而不必写绝对路径。</p>
+</li>
+<li><p>主要程序部分：</p>
+<p>就将主要的程序写好即可！在这个例子当中，就是 echo 那一行啦！</p>
+</li>
+<li><p>运行成果告知 (定义回传值)：</p>
+<p>讨论一个命令的运行成功与否，可以使用 $? 这个变量来观察， 我们也可以利用 exit 这个命令来让程序中断，并且回传一个数值给系统。 在我们这个例子当中，使用 exit 0 ，这代表离开 script 并且回传一个 0 给系统， 所以我运行完这个 script 后，若接著下达 echo $? 则可得到 0 的值，利用这个 exit n (n 是数字) 的功能，我们还可以自订错误信息。</p>
+</li>
+</ol>
+<h3 id="3-8-2-shell-script-">3.8.2  简单的 shell script 练习</h3>
+<p>1.对谈式脚本：变量内容由使用者决定</p>
+<p>大家应该都有安装过软件的经验，安装的时候，他不是会问你『要安装到那个目录去』吗？ 那个让使用者输入数据的动作，就是让使用者输入变量内容。</p>
+<p>在十一章 bash 的时候，我们学到一个 read 命令吧，请你以 read 命令撰写一个 script ，他可以让使用者输入：1. first name 与 2. last name， 最后在萤幕上显示：『Your full name is: 』的内容：</p>
+<pre><code>[root@www scripts]# vi sh02.sh
+#!/bin/bash
+# Program:
+#    User inputs his first name and last name.  Program shows his full name.
+# History:
+# 2005/08/23    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+read -p &quot;Please input your first name: &quot; firstname  # 提示使用者输入
+read -p &quot;Please input your last name:  &quot; lastname   # 提示使用者输入
+echo -e &quot;\nYour full name is: $firstname $lastname&quot; # 结果由萤幕输出
+</code></pre><p>2.随日期变化：利用 date 进行文件的创建</p>
+<p>假设我的服务器内有数据库，当我备份时，希望将每天的数据都备份成不同的档名。 哇！不同档名呢！这真困扰啊？难道要我每天去修改 script ？</p>
+<p>不需要啊！考虑每天的『日期』并不相同，所以我可以将档名取成类似： backup.2009-02-14.data ， 不就可以每天一个不同档名了吗？</p>
+<p>接下来出个相关的例子： 假设我想要创建三个空的文件 (透过 touch) ，档名最开头由使用者输入决定，假设使用者输入 filename 好了，那今天的日期是 2009/02/14 ， 我想要以前天、昨天、今天的日期来创建这些文件，亦即 filename_20090212, filename_20090213, filename_20090214 ，该如何是好？</p>
+<pre><code class="lang-linux">[root@www scripts]# vi sh03.sh
+#!/bin/bash
+# Program:
+#    Program creates three files, which named by user&#39;s input 
+#    and date command.
+# History:
+# 2005/08/23    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+# 1. 让使用者输入文件名称，并取得 fileuser 这个变量；
+echo -e &quot;I will use &#39;touch&#39; command to create 3 files.&quot; # 纯粹显示资讯
+read -p &quot;Please input your filename: &quot; fileuser         # 提示使用者输入
+
+# 2. 为了避免使用者随意按 Enter ，利用[变量功能]
+分析档名是否有配置？
+filename=${fileuser:-&quot;filename&quot;}           # 开始判断有否配置档名
+
+# 3. 开始利用 date 命令来取得所需要的档名了；
+date1=$(date --date=&#39;2 days ago&#39; +%Y%m%d)  # 前两天的日期
+date2=$(date --date=&#39;1 days ago&#39; +%Y%m%d)  # 前一天的日期
+date3=$(date +%Y%m%d)                      # 今天的日期
+file1=${filename}${date1}                  # 底下三行在配置档名
+file2=${filename}${date2}
+file3=${filename}${date3}
+
+# 4. 将档名创建吧！
+touch &quot;$file1&quot;                             # 底下三行在创建文件
+touch &quot;$file2&quot;
+touch &quot;$file3&quot;
+</code></pre>
+<p><a href="http://cn.linux.vbird.org/linux_basic/0320bash.php#variable_other_re">变量功能</a></p>
+<p>上面的范例使用了很多在<a href="http://cn.linux.vbird.org/linux_basic/0320bash.php">十一章</a>介绍过的概念： 包括小命令『 $(command) 』的取得信息、变量的配置功能、变量的累加以及利用 touch 命令辅助！ </p>
+<p>3.数值运算：简单的加减乘除</p>
+<p>各位看官应该还记得我们可以使用 <a href="http://cn.linux.vbird.org/linux_basic/0320bash.php#declare">declare</a> 来定义变量的类型。 当变量定义成为整数后才能够进行加减运算。此外，我们也可以利用『 $((计算式)) 』来进行数值运算的。bash shell 里头默认仅支持到整数。如果我们要使用者输入两个变量， 然后将两个变量的内容相乘，最后输出相乘的结果，那可以怎么做？</p>
+<pre><code>[root@www scripts]# vi sh04.sh
+#!/bin/bash
+# Program:
+#    User inputs 2 integer numbers; program will cross these two numbers.
+# History:
+# 2005/08/23    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+echo -e &quot;You SHOULD input 2 numbers, I will cross them! \n&quot;
+read -p &quot;first number:  &quot; firstnu
+read -p &quot;second number: &quot; secnu
+total=$(($firstnu*$secnu))
+echo -e &quot;\nThe result of $firstnu x $secnu is ==&gt; $total&quot;
+</code></pre><p>在数值的运算上，可以使用『 declare -i total=$firstnu*$secnu 』 也可以使用上面的方式来进行！基本上，鸟哥比较建议使用这样的方式来进行运算：</p>
+<p>var=$((运算内容))</p>
+<p>4.script 的运行方式差异 (source, sh script, ./script)</p>
+<p>利用直接运行的方式来运行 script</p>
+<p>当使用前一小节提到的直接命令下达 (不论是绝对路径/相对路径还是 $PATH 内)，或者是利用 bash (或 sh) 来下达脚本时， 该 script 都会使用一个新的 bash 环境来运行脚本内的命令！我们在第十一章 BASH 内谈到 export 的功能时，曾经就父程序/子程序谈过一些概念性的问题， 重点在於：『当子程序完成后，在子程序内的各项变量或动作将会结束而不会传回到父程序中』！ </p>
+<pre><code>[root@www scripts]# echo $firstname $lastname
+    &lt;==确认了，这两个变量并不存在喔！
+[root@www scripts]# sh sh02.sh
+Please input your first name: VBird &lt;==这个名字是鸟哥自己输入的
+Please input your last name:  Tsai 
+
+Your full name is: VBird Tsai      &lt;==看吧！在 script 运行中，这两个变量有生效
+[root@www scripts]# echo $firstname $lastname
+    &lt;==事实上，这两个变量在父程序的 bash 中还是不存在的！
+</code></pre><p>利用 source 来运行脚本：在父程序中运行</p>
+<p>如果你使用 source 来运行命令那就不一样了！同样的脚本我们来运行看看：</p>
+<pre><code>[root@www scripts]# source sh02.sh
+Please input your first name: VBird
+Please input your last name:  Tsai
+
+Your full name is: VBird Tsai
+[root@www scripts]# echo $firstname $lastname
+VBird Tsai  &lt;==嘿嘿！有数据产生喔！
+</code></pre><p>竟然生效了！因为使用 source  sh02.sh 会在父程序中运行的，因此各项动作都会在原本的 bash 内生效！这也是为啥你不注销系统而要让某些写入 ~/.bashrc 的配置生效时，需要使用『 source ~/.bashrc 』而不能使用『 bash ~/.bashrc 』是一样的啊！</p>
+<h3 id="3-8-3-">3.8.3 善用判断式</h3>
+<h4 id="3-8-3-1-test-">3.8.3.1 利用 test 命令的测试功能</h4>
+<p>当要检测系统上面某些文件或者是相关的属性时，利用 test 这个命令来工作真是好用得不得了， 举例来说，我要检查 /dmtsai 是否存在时，使用：</p>
+<pre><code>[root@www ~]# test -e /dmtsai
+</code></pre><p>运行结果并不会显示任何信息，但最后我们可以透过 $? 或 &amp;&amp; 及 || 来展现整个结果呢！ 例如我们在将上面的例子改写成这样：</p>
+<pre><code>[root@www ~]# test -e /dmtsai &amp;&amp; echo &quot;exist&quot; || echo &quot;Not exist&quot;
+Not exist  &lt;==结果显示不存在啊！
+</code></pre><pre><code>test 
+-e    该『档名』是否存在？(常用)
+-f    该『档名』是否存在且为文件(file)？(常用)
+-d    该『档名』是否存在且为目录(directory)？(常用)
+....
+</code></pre><p>现在我们就利用 test 来帮我们写几个简单的例子。首先，判断一下，让使用者输入一个档名，我们判断：</p>
+<p>这个文件是否存在，若不存在则给予一个『Filename does not exist』的信息，并中断程序；
+若这个文件存在，则判断他是个文件或目录，结果输出『Filename is regular file』或 『Filename is directory』
+判断一下，运行者的身份对这个文件或目录所拥有的权限，并输出权限数据！</p>
+<pre><code>[root@www scripts]# vi sh05.sh
+#!/bin/bash
+# Program:
+#    User input a filename, program will check the flowing:
+#    1.) exist? 2.) file/directory? 3.) file permissions 
+# History:
+# 2005/08/25    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+# 1. 让使用者输入档名，并且判断使用者是否真的有输入字串？
+echo -e &quot;Please input a filename, I will check the filename&#39;s type and \
+permission. \n\n&quot;
+read -p &quot;Input a filename : &quot; filename
+test -z $filename &amp;&amp; echo &quot;You MUST input a filename.&quot; &amp;&amp; exit 0
+# 2. 判断文件是否存在？若不存在则显示信息并结束脚本
+test ! -e $filename &amp;&amp; echo &quot;The filename &#39;$filename&#39; DO NOT exist&quot; &amp;&amp; exit 0
+# 3. 开始判断文件类型与属性
+test -f $filename &amp;&amp; filetype=&quot;regulare file&quot;
+test -d $filename &amp;&amp; filetype=&quot;directory&quot;
+test -r $filename &amp;&amp; perm=&quot;readable&quot;
+test -w $filename &amp;&amp; perm=&quot;$perm writable&quot;
+test -x $filename &amp;&amp; perm=&quot;$perm executable&quot;
+# 4. 开始输出资讯！
+echo &quot;The filename: $filename is a $filetype&quot;
+echo &quot;And the permissions are : $perm&quot;
+</code></pre><h4 id="3-8-3-2-">3.8.3.2 利用判断符号 [ ]</h4>
+<p>除了我们很喜欢使用的 test 之外，其实，我们还可以利用判断符号『 [ ] 』(就是中括号啦) 来进行数据的判断呢！ 举例来说，如果我想要知道 $HOME 这个变量是否为空的，可以这样做：</p>
+<pre><code>[root@www ~]# [ -z &quot;$HOME&quot; ] ; echo $?
+</code></pre><p>使用中括号必须要特别注意，因为中括号用在很多地方，包括万用字节与正规表示法等等，所以如果要在 bash 的语法当中使用中括号作为 shell 的判断式时，必须要注意中括号的两端需要有空白字节来分隔喔！ 假设我空白键使用『□』符号来表示，那么，在这些地方你都需要有空白键：</p>
+<pre><code>[  &quot;$HOME&quot;  ==  &quot;$MAIL&quot;  ]
+[□&quot;$HOME&quot;□==□&quot;$MAIL&quot;□]
+ ↑       ↑  ↑       ↑
+</code></pre><p>Tips:</p>
+<p>在 bash 当中使用一个等号与两个等号的结果是一样的！ 不过在一般一个等号代表『变量的配置』，两个等号则是代表『逻辑判断 (是否之意)』。 </p>
+<p>而如果没有空白分隔，例如 [\$HOME==\$MAIL] 时，我们的 bash 就会显示错误信息了！ 所以说，必须注意：</p>
+<ul>
+<li>在中括号 [] 内的每个组件都需要有空白键来分隔；</li>
+<li>在中括号内的变量，最好都以双引号括号起来；</li>
+<li>在中括号内的常数，最好都以单或双引号括号起来。</li>
+</ul>
+<p>为什么要这么麻烦啊？直接举例来说，假如我配置了 name=&quot;VBird Tsai&quot; ，然后这样判定：</p>
+<pre><code>[root@www ~]# name=&quot;VBird Tsai&quot;
+[root@www ~]# [ $name == &quot;VBird&quot; ]
+bash: [: too many arguments
+</code></pre><p>bash 报错『太多参数 (arguments)』！ 为什么呢？因为 $name 如果没有使用双引号括起来，那么上面的判定式会变成：</p>
+<pre><code>[ VBird Tsai == &quot;VBird&quot; ]
+</code></pre><p>上面肯定不对嘛！因为一个判断式仅能有两个数据的比对，上面 VBird 与 Tsai 还有 &quot;VBird&quot; 就有三个数据！ 这不是我们要的！我们要的应该是底下这个样子：</p>
+<pre><code>[ &quot;VBird Tsai&quot; == &quot;VBird&quot; ]
+</code></pre><p>中括号的使用方法与 test 几乎一模一样啊, 只是中括号比较常用在条件判断式 if ..... then ..... fi 的情况中就是了。 好，那我们也使用中括号的判断来做一个小案例好了，案例配置如下：</p>
+<p>当运行一个程序的时候，这个程序会让使用者选择 Y 或 N ，
+如果使用者输入 Y 或 y 时，就显示『 OK, continue 』
+如果使用者输入 n 或 N 时，就显示『 Oh, interrupt ！』
+如果不是 Y/y/N/n 之内的其他字节，就显示『 I don&#39;t know what your choice is 』</p>
+<pre><code>#!/bin/bash
+# Program:
+#     This program shows the user&#39;s choice
+# History:
+# 2005/08/25    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+read -p &quot;Please input (Y/N): &quot; yn
+[ &quot;$yn&quot; == &quot;Y&quot; -o &quot;$yn&quot; == &quot;y&quot; ] &amp;&amp; echo &quot;OK, continue&quot; &amp;&amp; exit 0
+[ &quot;$yn&quot; == &quot;N&quot; -o &quot;$yn&quot; == &quot;n&quot; ] &amp;&amp; echo &quot;Oh, interrupt!&quot; &amp;&amp; exit 0
+echo &quot;I don&#39;t know what your choice is&quot; &amp;&amp; exit 0
+</code></pre><p>由於输入正确 (Yes) 的方法有大小写之分，不论输入大写 Y 或小写 y 都是可以的，此时判断式内就得要有两个判断才行！ 所以这里使用 -o (或) 连结两个判断。 </p>
+<h4 id="3-8-3-3-shell-script-0-1-">3.8.3.3 Shell script 的默认变量($0, $1...)</h4>
+<p>我们知道命令可以带有选项与参数，例如 ls -la 可以察看包含隐藏档的所有属性与权限。那么 shell script 后面也可以带有参数呢。</p>
+<p>其实 script 针对参数已经有配置好一些变量名称了！对应如下：</p>
+<pre><code>/path/to/scriptname  opt1  opt2  opt3  opt4 
+       $0             $1    $2    $3    $4
+</code></pre><p>除了这些数字的变量之外， 我们还有一些较为特殊的变量可以在 script 内使用</p>
+<ul>
+<li>$# ：代表后接的参数『个数』，以上表为例这里显示为『 4 』；</li>
+<li>$@ ：代表『 &quot;$1&quot; &quot;$2&quot; &quot;$3&quot; &quot;$4&quot; 』之意，每个变量是独立的(用双引号括起来)；</li>
+<li>$* ：代表『 &quot;$1c$2c$3c$4&quot; 』，其中 c 为分隔字节，默认为空白键， 所以本例中代表『 &quot;$1 $2 $3 $4&quot; 』之意。</li>
+</ul>
+<p>那个 $@ 与 $* 基本上还是有所不同啦！一般情况下直接记忆 $@ 即可！ </p>
+<p>假设我要运行一个可以携带参数的 script ，运行该脚本后萤幕会显示如下的数据：</p>
+<ul>
+<li>程序的档名为何？</li>
+<li>共有几个参数？</li>
+<li>若参数的个数小於 2 则告知使用者参数数量太少</li>
+<li>全部的参数内容为何？</li>
+<li>第一个参数为何？</li>
+<li>第二个参数为何</li>
+</ul>
+<pre><code>[root@www scripts]# vi sh07.sh
+#!/bin/bash
+# Program:
+#    Program shows the script name, parameters...
+# History:
+# 2009/02/17    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+echo &quot;The script name is        ==&gt; $0&quot;
+echo &quot;Total parameter number is ==&gt; $#&quot;
+[ &quot;$#&quot; -lt 2 ] &amp;&amp; echo &quot;The number of parameter is less than 2.  Stop here.&quot; \
+    &amp;&amp; exit 0
+echo &quot;Your whole parameter is   ==&gt; &#39;$@&#39;&quot;
+echo &quot;The 1st parameter         ==&gt; $1&quot;
+echo &quot;The 2nd parameter         ==&gt; $2&quot;
+</code></pre><p>运行结果如下：</p>
+<pre><code>[root@www scripts]# sh sh07.sh theone haha quot
+The script name is        ==&gt; sh07.sh            &lt;==档名
+Total parameter number is ==&gt; 3                  &lt;==果然有三个参数
+Your whole parameter is   ==&gt; &#39;theone haha quot&#39; &lt;==参数的内容全部
+The 1st parameter         ==&gt; theone             &lt;==第一个参数
+The 2nd parameter         ==&gt; haha    
+</code></pre><p>shift：造成参数变量号码偏移</p>
+<pre><code>[root@www scripts]# vi sh08.sh
+#!/bin/bash
+# Program:
+#    Program shows the effect of shift function.
+# History:
+# 2009/02/17    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+echo &quot;Total parameter number is ==&gt; $#&quot;
+echo &quot;Your whole parameter is   ==&gt; &#39;$@&#39;&quot;
+shift   # 进行第一次『一个变量的 shift 』
+echo &quot;Total parameter number is ==&gt; $#&quot;
+echo &quot;Your whole parameter is   ==&gt; &#39;$@&#39;&quot;
+shift 3 # 进行第二次『三个变量的 shift 』
+echo &quot;Total parameter number is ==&gt; $#&quot;
+echo &quot;Your whole parameter is   ==&gt; &#39;$@&#39;&quot;
+</code></pre><pre><code>[root@www scripts]# sh sh08.sh one two three four five six &lt;==给予六个参数
+Total parameter number is ==&gt; 6   &lt;==最原始的参数变量情况
+Your whole parameter is   ==&gt; &#39;one two three four five six&#39;
+Total parameter number is ==&gt; 5   &lt;==第一次偏移，看底下发现第一个 one 不见了
+Your whole parameter is   ==&gt; &#39;two three four five six&#39;
+Total parameter number is ==&gt; 2   &lt;==第二次偏移掉三个，two three four 不见了
+Your whole parameter is   ==&gt; &#39;five six&#39;
+</code></pre><p>shift 会移动变量，而且 shift 后面可以接数字，代表拿掉最前面的几个参数的意思。</p>
+<h3 id="3-8-4-">3.8.4 条件判断式</h3>
+<h4 id="3-8-4-1-if-then">3.8.4.1 if then</h4>
+<pre><code>if [ 条件判断式 ]; then
+    当条件判断式成立时，可以进行的命令工作内容；
+fi   &lt;==将 if 反过来写，就成为 fi 啦！结束 if 之意！
+</code></pre><p>如果我有多个条件要判别时， 除了 sh06.sh 那个案例所写的之外， 还可以有多个中括号来隔开喔！而括号与括号之间以 &amp;&amp; 或 || 来隔开。</p>
+<p>[ &quot;\$yn&quot; == &quot;Y&quot; -o &quot;\$yn&quot; == &quot;y&quot; ]</p>
+<p>上式可替换为</p>
+<p>[ &quot;\$yn&quot; == &quot;Y&quot; ] || [ &quot;\$yn&quot; == &quot;y&quot; ]</p>
+<pre><code>if [ 条件判断式 ]; then
+    当条件判断式成立时，可以进行的命令工作内容；
+else
+    当条件判断式不成立时，可以进行的命令工作内容；
+fi
+</code></pre><pre><code>if [ 条件判断式一 ]; then
+    当条件判断式一成立时，可以进行的命令工作内容；
+elif [ 条件判断式二 ]; then
+    当条件判断式二成立时，可以进行的命令工作内容；
+else
+    当条件判断式一与二均不成立时，可以进行的命令工作内容；
+fi
+</code></pre><p>要注意的是， elif 也是个判断式，因此出现 elif 后面都要接 then 来处理！但是 else 已经是最后的没有成立的结果了， 所以 else 后面并没有 then。</p>
+<pre><code>read -p &quot;Please input (Y/N): &quot; yn
+
+if [ &quot;$yn&quot; == &quot;Y&quot; ] || [ &quot;$yn&quot; == &quot;y&quot; ]; then
+    echo &quot;OK, continue&quot;
+elif [ &quot;$yn&quot; == &quot;N&quot; ] || [ &quot;$yn&quot; == &quot;n&quot; ]; then
+    echo &quot;Oh, interrupt!&quot;
+else
+    echo &quot;I don&#39;t know what your choice is&quot;
+fi
+</code></pre><p>现在我们想让使用者输入『 hello 』这个关键字时，利用参数的方法可以这样依序设计：</p>
+<p>判断 $1 是否为 hello，如果是的话，就显示 &quot;Hello, how are you ?&quot;；
+如果没有加任何参数，就提示使用者必须要使用的参数下达法；
+而如果加入的参数不是 hello ，就提醒使用者仅能使用 hello 为参数。</p>
+<pre><code>[root@www scripts]# vi sh09.sh
+#!/bin/bash
+# Program:
+#    Check $1 is equal to &quot;hello&quot;
+# History:
+# 2005/08/28    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+if [ &quot;$1&quot; == &quot;hello&quot; ]; then
+    echo &quot;Hello, how are you ?&quot;
+elif [ &quot;$1&quot; == &quot;&quot; ]; then
+    echo &quot;You MUST input parameters, ex&gt; {$0 someword}&quot;
+else
+    echo &quot;The only parameter is &#39;hello&#39;, ex&gt; {$0 hello}&quot;
+fi
+</code></pre><p>有一个 netstat 的命令，这个命令可以查询到目前主机有开启的网络服务端口 (service ports)，可以利用『 netstat -tuln 』来取得目前主机有启动的服务， 而且取得的资讯有点像这样：</p>
+<pre><code>[root@www ~]# netstat -tuln
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address     Foreign Address   State
+tcp        0      0 0.0.0.0:111       0.0.0.0:*         LISTEN
+#封包格式           本地IP:端口       远程IP:端口       是否监听
+</code></pre><p>假设我的主机有兴趣要侦测的是比较常见的 port 21, 22, 80, 3306, 8080 时，那我如何透过 netstat 去侦测我的主机是否有开启这四个主要的网络服务端口呢？由於每个服务的关键字都是接在冒号『 : 』后面， 所以可以藉由撷取类似『 :80 』来侦测的！那我就可以简单的这样去写这个程序喔：</p>
+<pre><code>[root@www scripts]# vi sh10.sh
+#!/bin/bash
+# Program:
+#     Using netstat and grep to detect WWW,SSH,FTP and Mail services.
+# History:
+# 2005/08/28    VBird    First release
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+# 1. 先作一些告知的动作而已～
+echo &quot;Now, I will detect your Linux server&#39;s services!&quot;
+echo -e &quot;The www, ftp, ssh, and mail will be detect! \n&quot;
+
+# 2. 开始进行一些测试的工作，并且也输出一些资讯罗！
+testing=$(netstat -tuln | grep &quot;:80 &quot;)   # 侦测看 port 80 在否？
+if [ &quot;$testing&quot; != &quot;&quot; ]; then
+    echo &quot;WWW is running in your system.&quot;
+fi
+testing=$(netstat -tuln | grep &quot;:22 &quot;)   # 侦测看 port 22 在否？
+if [ &quot;$testing&quot; != &quot;&quot; ]; then
+    echo &quot;SSH is running in your system.&quot;
+fi
+testing=$(netstat -tuln | grep &quot;:21 &quot;)   # 侦测看 port 21 在否？
+if [ &quot;$testing&quot; != &quot;&quot; ]; then
+    echo &quot;FTP is running in your system.&quot;
+fi
+testing=$(netstat -tuln | grep &quot;:25 &quot;)   # 侦测看 port 25 在否？
+if [ &quot;$testing&quot; != &quot;&quot; ]; then
+    echo &quot;Mail is running in your system.&quot;
+fi
+</code></pre><h4 id="3-8-4-2-case-esac-">3.8.4.2 利用 case ..... esac 判断</h4>
+<pre><code>case  $变量名称 in   &lt;==关键字为 case ，还有变量前有钱字号
+  &quot;第一个变量内容&quot;)   &lt;==每个变量内容建议用双引号括起来，关键字则为小括号 )
+    程序段
+    ;;            &lt;==每个类别结尾使用两个连续的分号来处理！
+  &quot;第二个变量内容&quot;)
+    程序段
+    ;;
+  *)                  &lt;==最后一个变量内容都会用 * 来代表所有其他值
+    不包含第一个变量内容与第二个变量内容的其他程序运行段
+    exit 1
+    ;;
+esac                  &lt;==最终的 case 结尾！『反过来写』思考一下！
+</code></pre><p>这个语法以 case (实际案例之意) 为开头，结尾自然就是将 case 的英文反过来写！就成为 esac ！ 另外，每一个变量内容的程序段最后都需要两个分号 (;;) 来代表该程序段落的结束。 至於为何需要有 * 这个变量内容在最后呢？这是因为，如果使用者不是输入变量内容一或二时， 我们可以告知使用者相关的资讯啊！我们拿 sh09.sh 的案例来修改一下，他应该会变成这样喔：</p>
+<pre><code>case $1 in
+  &quot;hello&quot;)
+    echo &quot;Hello, how are you ?&quot;
+    ;;
+  &quot;&quot;)
+    echo &quot;You MUST input parameters, ex&gt; {$0 someword}&quot;
+    ;;
+  *)   # 其实就相当於万用字节，0~无穷多个任意字节之意！
+    echo &quot;Usage $0 {hello}&quot;
+    ;;
+esac
+</code></pre><h3 id="3-4-3-function-">3..4.3 function 功能</h3>
+<p>unction 的语法是这样的：</p>
+<pre><code>function fname() {
+    程序段
+}
+</code></pre><p> 要注意的是，因为 shell script 的运行方式是由上而下，由左而右， 因此在 shell script 当中的 function 的配置一定要在程序的最前面，这样才能够在运行时被找到可用的程序段。</p>
+<pre><code> function printit(){
+    echo -n &quot;Your choice is &quot;     # 加上 -n 可以不断行继续在同一行显示
+}
+
+echo &quot;This program will print your selection !&quot;
+case $1 in
+  &quot;one&quot;)
+    printit; echo $1 | tr &#39;a-z&#39; &#39;A-Z&#39;  # 将参数做大小写转换！
+    ;;
+  &quot;two&quot;)
+    printit; echo $1 | tr &#39;a-z&#39; &#39;A-Z&#39;
+    ;;
+  *)
+    echo &quot;Usage $0 {one|two|three}&quot;
+    ;;
+esac
+</code></pre><p>另外， function 也是拥有内建变量的, 他的内建变量与 shell script 很类似， 函数名称代表示 $0 ，而后续接的变量也是以 $1, $2... 来取代的。 这里很容易搞错喔～因为『 function fname() { 程序段 } 』内的 $0, $1... 等等与 shell script 的 $0 是不同的。</p>
+<h3 id="3-8-5-loop-">3.8.5 循环（loop）</h3>
+<h4 id="3-8-5-1-while-do-done-until-do-done-">3.8.5.1 while do done, until do done (不定循环)</h4>
+<pre><code>while [ condition ]  &lt;==中括号内的状态就是判断式
+do            &lt;==do 是回圈的开始！
+    程序段落
+done 
+</code></pre><p>while 说的是『当 condition 条件成立时，就进行回圈，直到 condition 的条件不成立才停止』的意思。</p>
+<pre><code>until [ condition ]
+do
+    程序段落
+done
+</code></pre><p>它说的是当 condition 条件成立时，就终止回圈， 否则就持续进行回圈的程序段。</p>
+<p>如果我想要计算 1+2+3+....+100 这个数据呢？ 利用回圈啊是这样的：</p>
+<pre><code>s=0  # 这是加总的数值变量
+i=0  # 这是累计的数值，亦即是 1, 2, 3....
+while [ &quot;$i&quot; != &quot;100&quot; ]
+do
+    i=$(($i+1))   # 每次 i 都会添加 1 
+    s=$(($s+$i))  # 每次都会加总一次！
+done
+echo &quot;The result of &#39;1+2+3+...+100&#39; is ==&gt; $s&quot;
+</code></pre><h4 id="3-8-5-2-for-do-done-">3.8.5.2 for...do...done (固定回圈)</h4>
+<pre><code>for var in con1 con2 con3 ...
+do
+    程序段
+done
+</code></pre><p>以上面的例子来说，这个 $var 的变量内容在回圈工作时：</p>
+<ol>
+<li>第一次回圈时， $var 的内容为 con1 ；</li>
+<li>第二次回圈时， $var 的内容为 con2 ；</li>
+<li>第三次回圈时， $var 的内容为 con3 ；</li>
+<li>....</li>
+</ol>
+<p>假设我有三种动物，分别是 dog, cat, elephant 三种， 我想每一行都输出这样：『There are dogs...』之类的字样，则可以：</p>
+<pre><code>for animal in dog cat elephant
+do
+    echo &quot;There are ${animal}s.... &quot;
+done
+</code></pre><p>最后，让我们来玩判断式加上回圈的功能！我想要让使用者输入某个目录档名， 然后我找出某目录内的档名的权限，该如何是好?</p>
+<pre><code># 1. 先看看这个目录是否存在啊？
+read -p &quot;Please input a directory: &quot; dir
+if [ &quot;$dir&quot; == &quot;&quot; -o ! -d &quot;$dir&quot; ]; then
+    echo &quot;The $dir is NOT exist in your system.&quot;
+    exit 1
+fi
+
+# 2. 开始测试文件罗～
+filelist=$(ls $dir)        # 列出所有在该目录下的文件名称
+for filename in $filelist
+do
+    perm=&quot;&quot;
+    test -r &quot;$dir/$filename&quot; &amp;&amp; perm=&quot;$perm readable&quot;
+    test -w &quot;$dir/$filename&quot; &amp;&amp; perm=&quot;$perm writable&quot;
+    test -x &quot;$dir/$filename&quot; &amp;&amp; perm=&quot;$perm executable&quot;
+    echo &quot;The file $dir/$filename&#39;s permission is $perm &quot;
+done
+</code></pre><p>除了上述的方法之外，for 回圈还有另外一种写法！语法如下：</p>
+<pre><code>for (( 初始值; 限制值; 运行步阶 ))
+do
+    程序段
+done
+</code></pre><p>这种语法适合於数值方式的运算当中，在 for 后面的括号内的三串内容意义为：</p>
+<ul>
+<li>初始值：某个变量在回圈当中的起始值，直接以类似 i=1 配置好；</li>
+<li>限制值：当变量的值在这个限制值的范围内，就继续进行回圈。例如 i&lt;=100；</li>
+<li>运行步阶：每作一次回圈时，变量的变化量。例如 i=i+1。</li>
+</ul>
+<p>在『运行步阶』的配置上，如果每次添加 1 ，则可以使用类似『i++』的方式。</p>
+<h3 id="3-8-6-shell-script-debug">3.8.6 shell script 的追踪与 debug</h3>
+<p>scripts 在运行之前，最怕的就是出现语法错误的问题了！那么我们如何 debug 呢？有没有办法不需要透过直接运行该 scripts 就可以来判断是否有问题呢？当然是有的！我们就直接以 bash 的相关参数来进行判断吧！</p>
+<pre><code>
+[root@www ~]# sh [-nvx] scripts.sh
+选项与参数：
+-n  ：不要运行 script，仅查询语法的问题；
+-v  ：再运行 sccript 前，先将 scripts 的内容输出到萤幕上；
+-x  ：将使用到的 script 内容显示到萤幕上，这是很有用的参数！
+
+范例一：测试 sh16.sh 有无语法的问题？
+[root@www ~]# sh -n sh16.sh 
+# 若语法没有问题，则不会显示任何资讯！
+
+范例二：将 sh15.sh 的运行过程全部列出来～
+[root@www ~]# sh -x sh15.sh 
++ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/root/bin
++ export PATH
++ for animal in dog cat elephant
++ echo &#39;There are dogs.... &#39;
+There are dogs....
++ for animal in dog cat elephant
++ echo &#39;There are cats.... &#39;
+There are cats....
++ for animal in dog cat elephant
++ echo &#39;There are elephants.... &#39;
+There are elephants....
+</code></pre><p>在加号后面的数据其实都是命令串，由於 sh -x 的方式来将命令运行过程也显示出来， 如此使用者可以判断程序码运行到哪一段时会出现相关的资讯！</p>
+<h1 id="-linux-">第四部分 Linux 使用者管理</h1>
+<h2 id="4-1-job-control-">4.1 工作管理 (job control)</h2>
+<p>这个工作管理 (job control) 是用在 bash 环境下的，也就是说：『当我们登陆系统取得 bash shell 之后，在单一终端机介面下同时进行多个工作的行为管理 』。举例来说，我们在登陆 bash 后， 想要一边复制文件、一边进行数据搜寻、一边进行编译，还可以一边进行 vi 程序撰写！ 当然我们可以重复登陆那六个文字介面的终端机环境中，不过，能不能在一个 bash 内达成？ 当然可以啊！就是使用 job control 啦！</p>
+<p>『进行工作管理的行为中， 其实每个工作都是目前 bash 的子程序，亦即彼此之间是有相关性的。 我们无法以 job control 的方式由 tty1 的环境去管理 tty2 的 bash ！』</p>
+<p>由於假设我们只有一个终端介面，因此在可以出现提示字节让你操作的环境就称为前景 (foreground)，至於其他工作就可以让你放入背景 (background) 去暂停或运行。</p>
+<p>要进行 bash 的 job control 必须要注意到的限制是：</p>
+<ul>
+<li>这些工作所触发的程序必须来自於你 shell 的子程序(只管理自己的 bash)；</li>
+<li>前景：你可以控制与下达命令的这个环境称为前景的工作 (foreground)；</li>
+<li>背景：可以自行运行的工作，你无法使用 [ctrl]+c 终止他，可使用 bg/fg 呼叫该工作；</li>
+<li>背景中『运行』的程序不能等待 terminal/shell 的输入(input)</li>
+</ul>
+<h3 id="4-1-1-">4.1.1 直接将命令丢到背景中『运行』的 &amp;</h3>
+<p>！举个简单的例子，我们要将 /etc/ 整个备份成为 /tmp/etc.tar.gz 且不想要等待，那么可以这样做：</p>
+<pre><code>[root@www ~]# tar -zpcf /tmp/etc.tar.gz /etc &amp;
+[1] 8400  &lt;== [job number] PID 
+[root@www ~]# tar: Removing leading `/&#39; from member names 
+# 在中括号内的号码为工作号码 (job number)，该号码与 bash 的控制有关。
+# 后续的 8400 则是这个工作在系统中的 PID。至於后续出现的数据是 tar 运行的数据流，
+# 由於我们没有加上数据流重导向，所以会影响画面！不过不会影响前景的操作喔！
+</code></pre><p>那么丢到背景中的工作什么时候完成？完成的时候会显示什么？如果你输入几个命令后，突然出现这个数据：</p>
+<pre><code>[1]+  Done                    tar -zpcf /tmp/etc.tar.gz /etc
+</code></pre><p>就代表 [1] 这个工作已经完成 (Done) ，该工作的命令则是接在后面那一串命令列。 另外，这个 &amp; 代表：『将工作丢到背景中去运行』喔！ 注意到那个『运行』的字眼！这样的情况最大的好处是： 不怕被 [ctrl]+c 中断！ 此外，将工作丢到背景当中要特别注意数据的流向。</p>
+<h3 id="4-1-2-ctrl-z">4.1.2 将『目前』的工作丢到背景中『暂停』：[ctrl]-z</h3>
+<p>如果我正在使用 vi ，却发现我有个文件不知道放在哪里，需要到 bash 环境下进行搜寻，此时是否要结束 vi 呢？当然不需要啊！只要暂时将 vi 给他丢到背景当中等待即可。 例如以下的案例：</p>
+<pre><code>[root@www ~]# vi ~/.bashrc
+# 在 vi 的一般模式下，按下 [ctrl]-z 这两个按键
+[1]+  Stopped                 vim ~/.bashrc
+[root@www ~]#   &lt;==顺利取得了前景的操控权！
+[root@www ~]# find / -print
+</code></pre><p>在 vi 的一般模式下，按下 [ctrl] 及 z 这两个按键，萤幕上会出现 [1] ，表示这是第一个工作， 而<strong>那个 + 代表最近一个被丢进背景的工作，且目前在背景下默认会被取用的那个工作 (与 fg 这个命令有关 )！而那个 Stopped 则代表目前这个工作的状态。在默认的情况下，使用 [ctrl]-z 丢到背景当中的工作都是『暂停』的状态。</strong></p>
+<h3 id="4-1-3-jobs">4.1.3 观察目前的背景工作状态： jobs</h3>
+<pre><code>
+[root@www ~]# jobs [-lrs]
+选项与参数：
+-l  ：除了列出 job number 与命令串之外，同时列出 PID 的号码；
+-r  ：仅列出正在背景 run 的工作；
+-s  ：仅列出正在背景当中暂停 (stop) 的工作。
+
+范例一：观察目前的 bash 当中，所有的工作，与对应的 PID
+[root@www ~]# jobs -l
+[1]- 10314 Stopped                 vim ~/.bashrc
+[2]+ 10833 Stopped                 find / -print
+</code></pre><p>仔细看到那个 + - 号！那个 + 代表默认的取用工作。 所以说：『目前我有两个工作在背景当中，两个工作都是暂停的， 而如果我仅输入 fg 时，那么那个 [2] 会被拿到前景当中来处理』！</p>
+<p>其实 + 代表最近被放到背景的工作号码， - 代表最近最后第二个被放置到背景中的工作号码。 而超过最后第三个以后的工作，就不会有 +/- 符号存在了。</p>
+<h3 id="4-1-4-fg">4.1.4 将背景工作拿到前景来处理：fg</h3>
+<p>举例来说，我们想要将上头范例当中的工作拿出来处理时：</p>
+<pre><code>[root@www ~]# fg %jobnumber
+选项与参数：
+%jobnumber ：jobnumber 为工作号码(数字)。注意，那个 % 是可有可无的！
+
+范例一：先以 jobs 观察工作，再将工作取出：
+[root@www ~]# jobs
+[1]- 10314 Stopped                 vim ~/.bashrc
+[2]+ 10833 Stopped                 find / -print
+[root@www ~]# fg      &lt;==默认取出那个 + 的工作，亦即 [2]。立即按下
+</code></pre><p>另外，如果输入『 fg - 』 则代表将 - 号的那个工作号码拿出来。</p>
+<h3 id="4-1-5-bg">4.1.5 让工作在背景下的状态变成运行中： bg</h3>
+<pre><code>
+范例一：一运行 find / -perm +7000 &gt; /tmp/text.txt 后，立刻丢到背景去暂停！
+[root@www ~]# find / -perm +7000 &gt; /tmp/text.txt
+# 此时，请立刻按下 [ctrl]-z 暂停！
+[3]+  Stopped                 find / -perm +7000 &gt; /tmp/text.txt
+
+范例二：让该工作在背景下进行，并且观察他！！
+[root@www ~]# jobs ; bg %3 ; jobs
+[1]-  Stopped                 vim ~/.bashrc
+[2]   Stopped                 find / -print
+[3]+  Stopped                 find / -perm +7000 &gt; /tmp/text.txt
+[3]+ find / -perm +7000 &gt; /tmp/text.txt &amp;  &lt;==用 bg%3 的情况！
+[1]+  Stopped                 vim ~/.bashrc
+[2]   Stopped                 find / -print
+[3]-  Running                 find / -perm +7000 &gt; /tmp/text.txt &amp;
+</code></pre><p>状态列～以经由 Stopping 变成了 Running ！ 命令列最后方多了一个 &amp; 的符号！ 代表该工作被启动在背景当中了。</p>
+<h3 id="4-1-6-kill">4.1.6 管理背景当中的工作： kill</h3>
+<pre><code>[root@www ~]# kill -signal %jobnumber
+[root@www ~]# kill -l
+选项与参数：
+-l  ：这个是 L 的小写，列出目前 kill 能够使用的讯号 (signal) 有哪些？
+signal ：代表给予后面接的那个工作什么样的指示罗！用 man 7 signal 可知：
+  -1 ：重新读取一次参数的配置档 (类似 reload)；
+  -2 ：代表与由键盘输入 [ctrl]-c 同样的动作；
+  -9 ：立刻强制删除一个工作；
+  -15：以正常的程序方式终止一项工作。与 -9 是不一样的。
+</code></pre><p>常用的 signal 您至少需要了解 1, 9, 15 这三个 signal 的意义。</p>
+<p>另外， kill 后面接的数字默认会是 PID ，如果想要管理 bash 的工作控制，就得要加上 %数字了。</p>
+<h3 id="4-1-7-">4.1.7 离线管理问题</h3>
+<p>如果你是以远程连线方式连接到你的 Linux 主机，并且将工作以 &amp; 的方式放到背景去， 请问，在工作尚未结束的情况下你离线了，该工作还会继续进行吗？答案是『否』！不会继续进行，而是会被中断掉。</p>
+<p>那该如何处理呢？ 首先，你可以参考前一章的 at 来处理即可！因为 at 是将工作放置到系统背景， 而与终端机无关。如果不想要使用 at 的话，那你也可以尝试使用 nohup 这个命令来处理喔！这个 nohup 可以让你在离线或注销系统后，还能够让工作继续进行。他的语法有点像这样：</p>
+<pre><code>[root@www ~]# nohup [命令与参数]   &lt;==在终端机前景中工作
+[root@www ~]# nohup [命令与参数] &amp; &lt;==在终端机背景中工作
+</code></pre><h2 id="4-2-">4.2 程序管理</h2>
+<h3 id="4-2-1-ps-ps-l-ps-aux-zombie-top">4.2.1 程序的观察： ps (ps -l, ps aux, zombie), top</h3>
+<pre><code>[root@www ~]# ps aux  &lt;==观察系统所有的程序数据
+[root@www ~]# ps -lA  &lt;==也是能够观察所有系统的数据
+[root@www ~]# ps axjf 
+</code></pre><p>通常鸟哥都会建议你，直接背两个比较不同的选项， 一个是只能查阅自己 bash 程序的『 ps -l 』一个则是可以查阅所有系统运行的程序『 ps aux 』！注意，你没看错，是『 ps aux 』没有那个减号 (-) ！</p>
+<p>仅观察自己的 bash 相关程序： ps -l</p>
+<pre><code>范例一：将目前属於您自己这次登陆的 PID 与相关资讯列示出来(只与自己的 bash 有关)
+[root@www ~]# ps -l
+F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+4 S     0 13639 13637  0  75   0 -  1287 wait   pts/1    00:00:00 bash
+4 R     0 13700 13639  0  77   0 -  1101 -      pts/1    00:00:00 ps
+</code></pre><ul>
+<li><p>F：代表这个程序旗标 (process flags)，说明这个程序的总结权限，常见号码有：</p>
+<ul>
+<li>若为 4 表示此程序的权限为 root ；</li>
+<li>若为 1 则表示此子程序仅进行复制(fork)而没有实际运行(exec)。</li>
+</ul>
+</li>
+<li><p>S：代表这个程序的状态 (STAT)，主要的状态有：</p>
+<ul>
+<li>R (Running)：该程序正在运行中；</li>
+<li>S (Sleep)：该程序目前正在睡眠状态(idle)，但可以被唤醒(signal)。</li>
+<li>D ：不可被唤醒的睡眠状态，通常这支程序可能在等待 I/O 的情况(ex&gt;列印)</li>
+<li>T ：停止状态(stop)，可能是在工作控制(背景暂停)或除错 (traced) 状态；</li>
+<li>Z (Zombie)：僵尸状态，程序已经终止但却无法被移除至内存外。</li>
+</ul>
+</li>
+<li>CMD：就是 command 的缩写，造成此程序的触发程序之命令为何。</li>
+</ul>
+<p>我们必须要知道的是<strong>僵尸</strong>(<strong>zombie</strong>)<strong>程序</strong>是什么？ 通常，造成僵尸程序的成因是因为该程序应该已经运行完毕，或者是因故应该要终止了， 但是该程序的父程序却无法完整的将该程序结束掉，而造成那个程序一直存在内存当中。 如果你发现在某个程序的 CMD 后面还接上 \<defunct> 时，就代表该程序是僵尸程序啦，例如：</p>
+<pre><code>apache  8683  0.0  0.9 83384 9992 ?   Z  14:33   0:00 /usr/sbin/httpd &lt;defunct&gt;
+</code></pre><p>如果你发现系统中很多僵尸程序时，要找出该程序的父程序，然后好好的做个追踪， 看看有什么地方需要改善的，不要只是直接将他 kill 掉而已。</p>
+<p>通常僵尸程序都已经无法控管，而直接是交给 init 这支程序来负责了，偏偏 init 是系统第一支运行的程序， 他是所有程序的父程序！我们无法杀掉该程序的 (杀掉他，系统就死掉了！)，所以如果产生僵尸程序， 而系统过一阵子还没有办法透过核心非经常性的特殊处理来将该程序删除时，那你只好透过 reboot 的方式来将该程序抹去了！</p>
+<ul>
+<li><strong>top</strong></li>
+</ul>
+<p>相对於 ps 是撷取一个时间点的程序状态， top 则可以持续侦测程序运行的状态！使用方式如下：</p>
+<pre><code>[root@www ~]# top [-d 数字] | top [-bnp]
+选项与参数：
+-d  ：后面可以接秒数，就是整个程序画面升级的秒数。默认是 5 秒；
+-b  ：以批量的方式运行 top ，还有更多的参数可以使用喔！
+      通常会搭配数据流重导向来将批量的结果输出成为文件。
+-n  ：与 -b 搭配，意义是，需要进行几次 top 的输出结果。
+-p  ：指定某些个 PID 来进行观察监测而已。
+
+在 top 运行过程当中可以使用的按键命令：
+    ? ：显示在 top 当中可以输入的按键命令；
+    P ：以 CPU 的使用资源排序显示；
+    M ：以 Memory 的使用资源排序显示；
+    N ：以 PID 来排序喔！
+    T ：由该 Process 使用的 CPU 时间累积 (TIME+) 排序。
+    k ：给予某个 PID 一个讯号  (signal)
+    r ：给予某个 PID 重新制订一个 nice 值。
+    q ：离开 top 软件的按键。
+</code></pre><p>top 默认使用 CPU 使用率 (%CPU) 作为排序的重点，如果你想要使用内存使用率排序，则可以按下『M』， 若要回复则按下『P』即可。如果想要离开 top 则按下『 q 』吧！如果你想要将 top 的结果输出成为文件时， 可以这样做：</p>
+<pre><code>范例二：将 top 的资讯进行 2 次，然后将结果输出到 /tmp/top.txt
+[root@www ~]# top -b -n 2 &gt; /tmp/top.txt
+# 这样一来，嘿嘿！就可以将 top 的资讯存到 /tmp/top.txt 文件中了。
+</code></pre><p>如果你想要观察的程序 CPU 与内存使用率都很低，结果老是无法在第一行显示时，该怎办？我们可以仅观察单一程序喔！如下所示：</p>
+<pre><code>
+范例三：我们自己的 bash PID 可由 $$ 变量取得，请使用 top 持续观察该 PID
+[root@www ~]# echo $$
+13639  &lt;==就是这个数字！他是我们 bash 的 PID
+[root@www ~]# top -d 2 -p 13639
+top - 17:31:56 up 7 days, 16:45,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks:   1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,100.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:    742664k total,   682540k used,    60124k free,   126548k buffers
+Swap:  1020088k total,       28k used,  1020060k free,   311276k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+13639 root      15   0  5148 1508 1220 S  0.0  0.2   0:00.18 bash
+</code></pre><p>看到没！就只会有一支程序给你看！</p>
+<h3 id="4-2-2-killall-signal-">4.2.2 killall -signal 命令名称</h3>
+<pre><code>[root@www ~]# killall [-iIe] [command name]
+选项与参数：
+-i  ：interactive 的意思，互动式的，若需要删除时，会出现提示字节给使用者；
+-e  ：exact 的意思，表示『后面接的 command name 要一致』，但整个完整的命令
+      不能超过 15 个字节。
+-I  ：命令名称(可能含参数)忽略大小写。
+
+范例一：给予 syslogd 这个命令启动的 PID 一个 SIGHUP 的讯号
+[root@www ~]# killall -1 syslogd
+# 如果用 ps aux 仔细看一下，syslogd 才是完整的命令名称。但若包含整个参数，
+# 则 syslogd -m 0 才是完整的呢！
+
+范例二：强制终止所有以 httpd 启动的程序
+[root@www ~]# killall -9 httpd
+
+范例三：依次询问每个 bash 程序是否需要被终止运行！
+[root@www ~]# killall -i -9 bash
+Kill bash(16905) ? (y/N) n &lt;==这个不杀！
+Kill bash(17351) ? (y/N) y &lt;==这个杀掉！
+</code></pre><p>要删除某个程序，我们可以使用 PID 或者是启动该程序的命令名称， 而如果要删除某个服务呢？最简单的方法就是利用 killall ， 因为他可以将系统当中所有以某个命令名称启动的程序全部删除。</p>
+<h3 id="4-2-3-netstat-">4.2.3 netstat ：追踪网络或插槽档</h3>
+<pre><code>[root@www ~]# netstat -[atunlp]
+选项与参数：
+-a  ：将目前系统上所有的连线、监听、Socket 数据都列出来
+-t  ：列出 tcp 网络封包的数据
+-u  ：列出 udp 网络封包的数据
+-n  ：不以程序的服务名称，以埠号 (port number) 来显示；
+-l  ：列出目前正在网络监听 (listen) 的服务；
+-p  ：列出该网络服务的程序 PID 
+</code></pre><pre><code>范例二：找出目前系统上已在监听的网络连线及其 PID
+[root@www ~]# netstat -tlnp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address    Foreign Address  State   PID/Program name
+tcp        0      0 127.0.0.1:25     0.0.0.0:*        LISTEN  4629/sendmail: 
+tcp        0      0 127.0.0.1:2207   0.0.0.0:*        LISTEN  4571/python
+tcp        0      0 :::22            :::*             LISTEN  4586/sshd
+# 除了可以列出监听网络的介面与状态之外，最后一个栏位还能够显示此服务的
+# PID 号码以及程序的命令名称喔！例如最后一行的 4586 就是该 PID
+</code></pre>
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="/toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="/toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="/toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="/toc/js/toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+//<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
