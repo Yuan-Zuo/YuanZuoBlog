@@ -4,7 +4,8 @@ body {
     min-height: 100vh;
     color: #2c3e50;
     font-size: 16px;
-    background: url("../img/Windows_11.jpg");
+    background: url("../images/Windows_11.jpg");
+    /*background: url("http://images/w");*/
     background-size: cover;
 }
 

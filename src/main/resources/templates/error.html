@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/css/community.css"/>
+    <script src="/js/jQuery.js"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <<script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <script src="/js/bootstrap.js" type="application/javascript"></script>
+</head>
+<body>
+
+<div th:include="navigation :: copy"></div>
+
+<div class="container-fluid main">
+    <div class="row">
+        <div class="jumbotron">
+            <h1>出错了</h1>
+            <p th:text="${message}">请稍后再试</p>
+            <p><a class="btn btn-primary btn-lg" href="/yuanzuoBlog/index" role="button">回到首页</a></p>
+        </div>
+    </div>
+</div>
+<div th:include="footer :: foot"></div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${sectionName}"></title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/css/community.css"/>
+    <script src="/js/jQuery.js"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <script src="/js/bootstrap.js" type="application/javascript"></script>
+</head>
+<body>
+
+<div th:include="navigation :: copy"></div>
+
+<div class="container-fluid main profile">
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+            <h3><span th:text="${sectionName}"></span></h3>
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'blogs'}">
+                <div class="media" th:each="blog : ${pagination.getData()}">
+                    <div class="media-left">
+                        <a >
+                            <img class="media-object img-rounded" th:src="${blog.user.getAvatarUrl()}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading" >
+                            <a th:href="@{'/yuanzuoBlog/blogs/'+${blog.getId()}}" th:text="${blog.getTitle()}"></a>
+                        </h4>
+                        <span class="text-desc">
+                        <span th:text="${blog.getCommentCount()}"></span>个回复 *
+                        <span th:text="${blog.getViewCount()}"></span>次浏览 * 编辑于
+                        <span th:text="${#calendars.format(blog.getGmtModify(),'yyyy-mm-dd')}"></span>
+                        <a th:href="'/yuanzuoBlog/publish/'+${blog.getId()}" class="community-menu"
+                           th:if="${session.user!=null && session.user.getId()==blog.getCreator()}">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑</span>
+                        </a>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'replies'}">
+                <div class="media" th:each="notification : ${pagination.getData()}">
+                    <div class="media-body">
+                        <h5 class="media-heading" >
+                            <span th:text="${notification.notifierName+' '+notification.typeName + ' '}"></span>
+                            <a th:href="@{'/yuanzuoBlog/notification/'+${notification.id}}"
+                               th:text="${notification.outerTitle}" >
+                            </a>
+                            <span class="label label-danger" th:if="${notification.status == 0}">未读</span>
+
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li th:if="${pagination.isShowFirstPage()}">
+                            <a th:href="@{'/yuanzuoBlog/profile/'+${section}(page=${1})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.isShowPrevious()}">
+                            <a th:href="@{'/yuanzuoBlog/profile/'+${section}(page=${pagination.getPage() - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&lsaquo;</span>
+                            </a>
+                        </li>
+                        <li th:class="${pagination.getPage() == page} ? 'active' : ''"
+                            th:each="page : ${pagination.getPages()}">
+                            <a th:href="@{'/yuanzuoBlog/profile/'+${section}(page=${page})}" th:text="${page}"></a>
+                        </li>
+
+                        <li th:if="${pagination.isShowNext()}">
+                            <a th:href="@{'/yuanzuoBlog/profile/'+${section}(page=${pagination.getPage() + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&rsaquo;</span>
+                            </a>
+                        </li>
+                        <li th:if="${pagination.isShowEndPage()}">
+                            <a th:href="@{'/yuanzuoBlog/profile/'+${section} (page=${pagination.getTotalPage()})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            <div class="list-group section">
+                <a href="/yuanzuoBlog/profile/blogs"
+                   th:class="${section == 'blogs'} ? 'list-group-item active' : 'list-group-item'">我的文章 <span
+                        class="badge"></span></a>
+                <a href="/yuanzuoBlog/profile/replies"
+                   th:class="${section == 'replies'} ? 'list-group-item active' : 'list-group-item'"
+                   class="list-group-item">最新回复
+                    <span class="badge" th:text="${session.unReadCount}"></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="footer :: foot"></div>
+
+</body>
+</html>
