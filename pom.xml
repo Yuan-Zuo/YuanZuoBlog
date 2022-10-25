@@ -89,6 +89,7 @@
 			<artifactId>okhttp</artifactId>
 			<version>2.7.5</version>
 		</dependency>
+<<<<<<< HEAD
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -106,6 +107,8 @@
 			<artifactId>cos_api</artifactId>
 			<version>5.6.89</version>
 		</dependency>
+=======
+>>>>>>> 8a7ada88d8727b4615944fac7060a00482337c6e
 	</dependencies>
 
 	<build>
@@ -122,6 +125,7 @@
 				</executions>
 			</plugin>
 
+<<<<<<< HEAD
 			<plugin>
 				<groupId>org.mybatis.generator</groupId>
 				<artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -135,6 +139,8 @@
 				</dependencies>
 			</plugin>
 
+=======
+>>>>>>> 8a7ada88d8727b4615944fac7060a00482337c6e
 		</plugins>
 	</build>
 

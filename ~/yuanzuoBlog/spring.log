@@ -1,0 +1,35 @@
+2022-10-24 20:38:14.684  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : Starting DemoApplication using Java 1.8.0_322 on DESKTOP-TFN33LQ with PID 16404 (F:\idea\MyBlog\target\classes started by 30317 in F:\idea\MyBlog)
+2022-10-24 20:38:14.684  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : No active profile set, falling back to 1 default profile: "default"
+2022-10-24 20:38:15.135  INFO 16404 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-10-24 20:38:15.136  INFO 16404 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-10-24 20:38:15.136  INFO 16404 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-10-24 20:38:15.185  INFO 16404 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-10-24 20:38:15.185  INFO 16404 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 497 ms
+2022-10-24 20:38:15.332  INFO 16404 --- [restartedMain] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static org.springframework.context.ApplicationContext com.Myblog.demo.util.BeanUtil.applicationContext
+2022-10-24 20:38:15.437  INFO 16404 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2022-10-24 20:38:15.465  WARN 16404 --- [restartedMain] org.thymeleaf.templatemode.TemplateMode  : [THYMELEAF][restartedMain] Template Mode 'HTML5' is deprecated. Using Template Mode 'HTML' instead.
+2022-10-24 20:38:15.517  INFO 16404 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2022-10-24 20:38:15.546  INFO 16404 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-10-24 20:38:15.555  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : Started DemoApplication in 0.904 seconds (JVM running for 11951.364)
+2022-10-24 20:38:15.557  INFO 16404 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2022-10-24 20:38:15.569  INFO 16404 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-10-24 20:38:15.570  INFO 16404 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-10-24 20:38:15.572  INFO 16404 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2022-10-24 20:38:15.714 ERROR 16404 --- [http-nio-8080-exec-1] com.alibaba.druid.pool.DruidDataSource   : testWhileIdle is true, validationQuery not set
+2022-10-24 20:38:15.715  INFO 16404 --- [http-nio-8080-exec-1] com.alibaba.druid.pool.DruidDataSource   : {dataSource-3} inited
+2022-10-24 20:38:49.002  INFO 16404 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-3} closed
+2022-10-24 20:38:53.439  INFO 19412 --- [restartedMain] com.Myblog.demo.DemoApplication          : Starting DemoApplication using Java 1.8.0_322 on DESKTOP-TFN33LQ with PID 19412 (F:\idea\MyBlog\target\classes started by 30317 in F:\idea\MyBlog)
+2022-10-24 20:38:53.441  INFO 19412 --- [restartedMain] com.Myblog.demo.DemoApplication          : No active profile set, falling back to 1 default profile: "default"
+2022-10-24 20:38:53.521  INFO 19412 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2022-10-24 20:38:53.521  INFO 19412 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2022-10-24 20:38:55.900  INFO 19412 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-10-24 20:38:55.922  INFO 19412 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-10-24 20:38:55.923  INFO 19412 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-10-24 20:38:56.097  INFO 19412 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-10-24 20:38:56.098  INFO 19412 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2576 ms
+2022-10-24 20:38:56.953  INFO 19412 --- [restartedMain] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static org.springframework.context.ApplicationContext com.Myblog.demo.util.BeanUtil.applicationContext
+2022-10-24 20:38:57.350  INFO 19412 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2022-10-24 20:38:57.447  WARN 19412 --- [restartedMain] org.thymeleaf.templatemode.TemplateMode  : [THYMELEAF][restartedMain] Template Mode 'HTML5' is deprecated. Using Template Mode 'HTML' instead.
+2022-10-24 20:38:57.676  INFO 19412 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2022-10-24 20:38:57.727  INFO 19412 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-10-24 20:38:57.751  INFO 19412 --- [restartedMain] com.Myblog.demo.DemoApplication          : Started DemoApplication in 5.088 seconds (JVM running for 6.908)

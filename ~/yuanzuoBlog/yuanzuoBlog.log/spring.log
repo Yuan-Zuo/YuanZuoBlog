@@ -1,0 +1,20 @@
+2022-10-24 20:38:00.919  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : Starting DemoApplication using Java 1.8.0_322 on DESKTOP-TFN33LQ with PID 16404 (F:\idea\MyBlog\target\classes started by 30317 in F:\idea\MyBlog)
+2022-10-24 20:38:00.919  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : No active profile set, falling back to 1 default profile: "default"
+2022-10-24 20:38:02.545  INFO 16404 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-10-24 20:38:02.546  INFO 16404 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-10-24 20:38:02.546  INFO 16404 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-10-24 20:38:02.579  INFO 16404 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-10-24 20:38:02.579  INFO 16404 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1652 ms
+2022-10-24 20:38:02.725  INFO 16404 --- [restartedMain] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static org.springframework.context.ApplicationContext com.Myblog.demo.util.BeanUtil.applicationContext
+2022-10-24 20:38:02.821  INFO 16404 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2022-10-24 20:38:02.849  WARN 16404 --- [restartedMain] org.thymeleaf.templatemode.TemplateMode  : [THYMELEAF][restartedMain] Template Mode 'HTML5' is deprecated. Using Template Mode 'HTML' instead.
+2022-10-24 20:38:02.886  INFO 16404 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2022-10-24 20:38:02.904  INFO 16404 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-10-24 20:38:02.909  INFO 16404 --- [restartedMain] com.Myblog.demo.DemoApplication          : Started DemoApplication in 2.079 seconds (JVM running for 11938.717)
+2022-10-24 20:38:02.911  INFO 16404 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2022-10-24 20:38:02.920  INFO 16404 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-10-24 20:38:02.922  INFO 16404 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-10-24 20:38:02.926  INFO 16404 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2022-10-24 20:38:03.041 ERROR 16404 --- [http-nio-8080-exec-1] com.alibaba.druid.pool.DruidDataSource   : testWhileIdle is true, validationQuery not set
+2022-10-24 20:38:03.042  INFO 16404 --- [http-nio-8080-exec-1] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} inited
+2022-10-24 20:38:14.329  INFO 16404 --- [Thread-27] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} closed
